@@ -1,0 +1,2 @@
+include ':feature-adapter'
+include ':feature-adapter-rx'
