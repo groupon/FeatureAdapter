@@ -1,0 +1,13 @@
+docker-compose-file: "docker-compose.yml"
+
+run:
+  android_build_image: ./build.sh
+
+
+<% if( DOTCI_BRANCH =~ /^(master|release(\/[0-9]+\.[0-9]+)?)$/ ) { %>
+notifications:
+  - hipchat: 2393810 #ping Android core room
+<% } %>
+
+plugins:
+  - artifacts: gradlew, **/build/reports/**
