@@ -30,3 +30,9 @@ dependencies {
   testCompile deps.junit
   testCompile deps.easymock
 }
+
+apply plugin: 'android-maven-publish'
+apply plugin: 'groupon-nexus-publish'
+
+group 'com.groupon.android.featureadapter'
+version '1.0.0-SNAPSHOT'

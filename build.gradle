@@ -27,6 +27,7 @@ buildscript {
     }
   }
   dependencies {
+    classpath 'com.groupon.gradle:android-maven-publish:2.0.2'
     classpath 'com.groupon.gradle:nexus-publish:2.0.3'
     classpath 'com.android.tools.build:gradle:2.3.1'
     classpath 'me.tatarka:gradle-retrolambda:3.6.1'
