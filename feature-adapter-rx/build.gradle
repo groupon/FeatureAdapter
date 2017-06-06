@@ -1,0 +1,42 @@
+apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
+apply from: rootProject.file("${quality_gradle_android_file}")
+
+android {
+  compileSdkVersion versions.compileSdk
+  buildToolsVersion versions.buildTools
+  defaultConfig {
+    minSdkVersion versions.minSdk
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  testOptions {
+    unitTests.returnDefaultValues = true
+  }
+}
+
+dependencies {
+  compile project(':feature-adapter')
+  compile deps.findbugs
+  compile deps.javaxannotation
+
+  compile deps.support.compat
+  compile deps.support.design
+  compile deps.support.recyclerview
+
+  compile deps.rxjava
+  compile deps.rxbinding
+
+  testCompile deps.junit
+  testCompile deps.easymock
+}
+
+apply plugin: 'android-maven-publish'
+apply plugin: 'groupon-nexus-publish'
+
+group 'com.groupon.android.featureadapter'
+version '1.0.0-SNAPSHOT'
