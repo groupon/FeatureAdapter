@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
 apply from: rootProject.file("${quality_gradle_android_file}")
+apply plugin: 'com.github.hierynomus.license'
 
 android {
   compileSdkVersion versions.compileSdk
@@ -29,6 +30,10 @@ dependencies {
 
   testCompile deps.junit
   testCompile deps.easymock
+}
+
+license {
+  header = rootProject.file('LICENSE')
 }
 
 apply plugin: 'android-maven-publish'
