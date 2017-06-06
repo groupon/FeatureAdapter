@@ -38,5 +38,5 @@ dependencies {
 apply plugin: 'android-maven-publish'
 apply plugin: 'groupon-nexus-publish'
 
-group 'com.groupon.android.featureadapter'
+group 'com.groupon.android.feature-adapter'
 version '1.0.0-SNAPSHOT'
