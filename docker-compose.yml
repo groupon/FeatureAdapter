@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+  android_build_image:
+    build: .
+    environment:
+     - DOTCI_BRANCH
