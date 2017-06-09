@@ -42,6 +42,13 @@ buildscript {
 allprojects {
   repositories {
     jcenter()
+    maven { url "https://jitpack.io" }
+    maven {
+      url "http://nexus-dev.snc1/content/repositories/snapshots/"
+    }
+    maven {
+      url "http://nexus-dev.snc1/content/repositories/releases/"
+    }
   }
 
   ext {
