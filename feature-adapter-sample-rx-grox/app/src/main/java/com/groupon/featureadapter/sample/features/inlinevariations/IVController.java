@@ -6,17 +6,16 @@ import com.groupon.featureadapter.ViewItem;
 import com.groupon.featureadapter.sample.DealDetailsModel;
 import com.groupon.featureadapter.sample.model.Trait;
 import com.groupon.featureadapter.sample.model.Variation;
-import com.groupon.featureadapter.sample.state.DealStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.inject.Inject;
 
 public class IVController extends FeatureController<DealDetailsModel> {
 
-  @Inject TraitAdapterViewTypeDelegate traitAdapterViewTypeDelegate;
-  @Inject VariationAdapterViewTypeDelegate variationAdapterViewTypeDelegate;
-  @Inject DealStore dealStore;
+  private TraitAdapterViewTypeDelegate traitAdapterViewTypeDelegate =
+      new TraitAdapterViewTypeDelegate();
+  private VariationAdapterViewTypeDelegate variationAdapterViewTypeDelegate =
+      new VariationAdapterViewTypeDelegate();
 
   public List<AdapterViewTypeDelegate> getAdapterViewTypeDelegates() {
     return Arrays.asList(traitAdapterViewTypeDelegate, variationAdapterViewTypeDelegate);

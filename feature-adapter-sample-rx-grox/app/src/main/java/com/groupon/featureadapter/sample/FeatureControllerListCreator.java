@@ -6,20 +6,13 @@ import com.groupon.featureadapter.sample.features.inlinevariations.IVController;
 import com.groupon.featureadapter.sample.features.multioptions.OptionsController;
 import java.util.Arrays;
 import java.util.List;
-import javax.inject.Inject;
 
-public class GoodsDetailsFeatureControllerListCreator {
+public class FeatureControllerListCreator {
 
-  @Inject IVController ivController;
   private List<FeatureController<DealDetailsModel>> group;
 
-  @Inject
-  public GoodsDetailsFeatureControllerListCreator() {}
-
-  @Inject
-  @SuppressWarnings("unused")
-  void init() {
-    group = Arrays.asList(new HeaderController(), new OptionsController(), ivController);
+  public FeatureControllerListCreator() {
+    group = Arrays.asList(new HeaderController(), new OptionsController(), new IVController());
   }
 
   public List<FeatureController<DealDetailsModel>> getFeatureControllerList() {

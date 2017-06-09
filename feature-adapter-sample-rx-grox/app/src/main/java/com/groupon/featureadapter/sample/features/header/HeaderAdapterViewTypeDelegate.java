@@ -9,14 +9,12 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.groupon.featureadapter.AdapterViewTypeDelegate;
 import com.groupon.featureadapter.samplerxgrox.R;
-import javax.inject.Inject;
 
 public class HeaderAdapterViewTypeDelegate
     extends AdapterViewTypeDelegate<HeaderAdapterViewTypeDelegate.SummaryViewHolder, HeaderModel> {
 
   private static final int LAYOUT = R.layout.dd_header;
 
-  @Inject
   public HeaderAdapterViewTypeDelegate() {}
 
   @Override

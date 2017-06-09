@@ -11,14 +11,12 @@ import com.groupon.featureadapter.sample.features.inlinevariations.state.TraitCl
 import com.groupon.featureadapter.sample.model.Trait;
 import com.groupon.featureadapter.sample.model.Variation;
 import com.groupon.featureadapter.samplerxgrox.R;
-import javax.inject.Inject;
 
 public class TraitAdapterViewTypeDelegate
     extends AdapterViewTypeDelegate<TraitAdapterViewTypeDelegate.TraitViewHolder, Trait> {
 
   private static final int LAYOUT = R.layout.iv_trait;
 
-  @Inject
   public TraitAdapterViewTypeDelegate() {}
 
   @Override

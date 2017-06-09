@@ -20,10 +20,12 @@ public abstract class DealDetailsModel {
   public abstract String getSummary();
 
   public static Builder builder() {
-    return new AutoValue_DealDetailsModel.Builder();
+    return new AutoValue_DealDetailsModel.Builder().setRefreshing(true);
   }
 
   public abstract Builder toBuilder();
+
+  public abstract boolean isRefreshing();
 
   @AutoValue.Builder
   public abstract static class Builder {
@@ -35,6 +37,8 @@ public abstract class DealDetailsModel {
     public abstract Builder setOption(Option option);
 
     public abstract Builder setSummary(String summary);
+
+    public abstract Builder setRefreshing(boolean isRefreshing);
 
     public abstract DealDetailsModel build();
   }

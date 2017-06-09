@@ -10,7 +10,6 @@ import com.groupon.featureadapter.DiffUtilComparator;
 import com.groupon.featureadapter.sample.features.inlinevariations.state.VariationClickAction;
 import com.groupon.featureadapter.sample.model.Variation;
 import com.groupon.featureadapter.samplerxgrox.R;
-import javax.inject.Inject;
 
 public class VariationAdapterViewTypeDelegate
     extends AdapterViewTypeDelegate<
@@ -18,7 +17,6 @@ public class VariationAdapterViewTypeDelegate
 
   private static final int LAYOUT = R.layout.iv_variation;
 
-  @Inject
   public VariationAdapterViewTypeDelegate() {}
 
   @Override

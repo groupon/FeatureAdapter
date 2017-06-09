@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.groupon.featureadapter.AdapterViewTypeDelegate;
-import com.groupon.featureadapter.sample.features.multioptions.state.OptionClickedAction;
+import com.groupon.featureadapter.sample.features.multioptions.state.OptionClickedEvent;
 import com.groupon.featureadapter.sample.model.Option;
 import com.groupon.featureadapter.samplerxgrox.R;
 
@@ -24,7 +24,7 @@ public class OptionAdapterViewTypeDelegate
   @Override
   public void bindViewHolder(OptionViewHolder holder, Option model) {
     holder.valueText.setText(model.getTitle());
-    holder.valueText.setOnClickListener(view -> fireEvent(new OptionClickedAction(model)));
+    holder.valueText.setOnClickListener(view -> fireEvent(new OptionClickedEvent(model)));
   }
 
   @Override

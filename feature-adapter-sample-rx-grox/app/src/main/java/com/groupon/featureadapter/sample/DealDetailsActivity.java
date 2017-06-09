@@ -1,86 +1,72 @@
 package com.groupon.featureadapter.sample;
 
-import static com.groupon.featureadapter.events.RxFeatureEvent.featureEvents;
-import static com.groupon.grox.RxStores.states;
-import static com.jakewharton.rxbinding.view.RxView.clicks;
 import static rx.Observable.just;
-import static rx.schedulers.Schedulers.computation;
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
+import static rx.schedulers.Schedulers.io;
+import static solid.collectors.ToSolidList.toSolidList;
+import static solid.stream.Stream.stream;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.RxFeaturesAdapter;
-import com.groupon.featureadapter.sample.features.refresh.commands.RefreshDealCommand;
-import com.groupon.featureadapter.sample.state.DealStore;
+import com.groupon.featureadapter.events.FeatureEvent;
+import com.groupon.featureadapter.events.FeatureEventListener;
+import com.groupon.featureadapter.sample.features.inlinevariations.state.TraitClickAction;
+import com.groupon.featureadapter.sample.features.inlinevariations.state.VariationClickAction;
+import com.groupon.featureadapter.sample.features.multioptions.state.OptionClickedEvent;
+import com.groupon.featureadapter.sample.model.Deal;
+import com.groupon.featureadapter.sample.model.DealApiClient;
+import com.groupon.featureadapter.sample.model.Option;
+import com.groupon.featureadapter.sample.model.Trait;
+import com.groupon.featureadapter.sample.model.Variation;
 import com.groupon.featureadapter.samplerxgrox.R;
-import com.groupon.grox.commands.rxjava1.Command;
-import javax.inject.Inject;
-import rx.Observable;
-import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
-import toothpick.Scope;
-import toothpick.Toothpick;
-import toothpick.config.Module;
+import solid.collections.SolidList;
 
 public class DealDetailsActivity extends AppCompatActivity {
 
   public static final String SCOPE = "SCOPE";
   public static final int MAX_THROTTLE = 1000;
-  @Inject GoodsDetailsFeatureControllerListCreator recyclerViewController;
+  FeatureControllerListCreator recyclerViewController = new FeatureControllerListCreator();
   RxFeaturesAdapter adapter;
 
-  private DealStore store;
+  private DealDetailsModel dealDetailsModel;
   private final CompositeSubscription subscriptions = new CompositeSubscription();
-  private Scope scope;
+  private RecyclerView recycler;
+  private ProgressBar progressBar;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    final DealDetailsModel initialState = DealDetailsModel.builder().build();
-    store = new DealStore(initialState);
+    dealDetailsModel = DealDetailsModel.builder().build();
 
-    scope = Toothpick.openScope(this);
-    scope.installModules(
-        new Module() {
-          {
-            bind(DealStore.class).toInstance(store);
-          }
-        });
-    Toothpick.inject(this, scope);
     setContentView(R.layout.activity_with_recycler);
 
     adapter = new RxFeaturesAdapter(recyclerViewController.getFeatureControllerList());
 
-    RecyclerView recycler = (RecyclerView) findViewById(R.id.recycler_view);
+    recycler = (RecyclerView) findViewById(R.id.recycler_view);
     recycler.setHasFixedSize(true);
     recycler.setLayoutManager(new FlexboxLayoutManager());
     recycler.setAdapter(adapter);
+    progressBar = (ProgressBar) findViewById(R.id.progress);
 
     Button buttonRefresh = (Button) findViewById(R.id.button_refresh);
-    // we could have called this below
-    //manageCommands(clicks(buttonRefresh)
-    //                     .map(ignored -> new RefreshDealCommand()));
-    //but this cancels the request as the UI dies
-    //we can do this to let the request live independently of the UI
-    subscriptions.add(
-        clicks(buttonRefresh)
-            .map((Func1<Void, Command>) aVoid -> new RefreshDealCommand(random()))
-            .subscribe(command -> command.actions().subscribe(store::dispatch)));
+    buttonRefresh.setOnClickListener(view -> refreshDeal());
 
-    //same as
-    //final Observable<Action> publish = new RefreshDealCommand().actions().share();
-    //subscriptions.addFeatureCommandListener(clicks(buttonRefresh)
-    //        .flatMap(ignored -> publish)
-    //        .subscribe(store::dispatch));
-    //publish.subscribe(store::dispatch);
+    final FeatureEventListener featureEventListener = new GeneralFeatureEventListener();
+    for (FeatureController<DealDetailsModel> dealDetailsModelFeatureController :
+        recyclerViewController.getFeatureControllerList()) {
+      dealDetailsModelFeatureController.addFeatureEventListener(featureEventListener);
+    }
 
-    manageCommands(
-        featureEvents(recyclerViewController.getFeatureControllerList()).cast(Command.class));
-
-    updateAdapterOnStateChange();
+    updateAdapter();
 
     refreshDeal();
   }
@@ -89,35 +75,131 @@ public class DealDetailsActivity extends AppCompatActivity {
     return (long) (Math.random() * MAX_THROTTLE);
   }
 
-  private void updateAdapterOnStateChange() {
-    subscriptions.add(
-        states(store).subscribeOn(computation()).compose(adapter::updateFeatureItems).subscribe());
-  }
-
-  @Override
-  public Object getSystemService(String name) {
-    if (name.equals(SCOPE)) {
-      return scope;
+  private void updateAdapter() {
+    if (dealDetailsModel.isRefreshing()) {
+      progressBar.setVisibility(View.VISIBLE);
+      recycler.setVisibility(View.GONE);
+    } else {
+      progressBar.setVisibility(View.GONE);
+      recycler.setVisibility(View.VISIBLE);
+      subscriptions.add(adapter.updateFeatureItems(just(dealDetailsModel)).subscribe());
     }
-    return super.getSystemService(name);
-  }
-
-  private void manageCommands(Observable<Command> commandObservable) {
-    subscriptions.add(
-        commandObservable
-            .observeOn(computation())
-            .flatMap(Command::actions)
-            .subscribe(store::dispatch));
   }
 
   private void refreshDeal() {
-    manageCommands(just(new RefreshDealCommand(0)));
+    subscriptions.add(
+        DealApiClient.getDeal(random())
+            .subscribeOn(io())
+            .toObservable()
+            .observeOn(mainThread())
+            .doOnSubscribe(this::updateProgress)
+            .subscribe(this::updateDeal, this::updateErrorMessage));
+  }
+
+  private void updateOption(Option option) {
+    dealDetailsModel =
+        dealDetailsModel.toBuilder().setOption(option).setSummary(option.getTitle()).build();
+    updateAdapter();
+  }
+
+  private void updateTraitClicked(int traitIndex) {
+    Deal deal = dealDetailsModel.getDeal();
+    Trait trait = deal.getTraits().get(traitIndex);
+    Trait newTrait = trait.withExpanded(!trait.isExpanded());
+    dealDetailsModel =
+        dealDetailsModel.toBuilder().setDeal(deal.withTraitAt(traitIndex, newTrait)).build();
+    updateAdapter();
+  }
+
+  private void updateVariationClicked(int traitIndex, int variationIndex) {
+    Deal deal = dealDetailsModel.getDeal();
+    Trait trait = deal.getTraits().get(traitIndex);
+    SolidList<Variation> variations = trait.getVariations();
+    Variation targetVariation = variations.get(variationIndex);
+
+    // toggle selection for variation
+    Variation selectedVariation = targetVariation.isSelected() ? null : targetVariation;
+
+    // update variation selection states
+    variations =
+        stream(variations)
+            .map(v -> v.withSelected(v.equals(selectedVariation)))
+            .collect(toSolidList());
+
+    // update trait view state
+    trait = trait.withSelectedVariation(selectedVariation).withVariations(variations);
+
+    //update summary
+    final String summary =
+        dealDetailsModel.getOption().getTitle()
+            + " "
+            + targetVariation.getValue()
+            + " "
+            + trait.getName();
+
+    dealDetailsModel =
+        dealDetailsModel
+            .toBuilder()
+            .setDeal(deal.withTraitAt(traitIndex, trait))
+            .setSummary(summary)
+            .build();
+    updateAdapter();
+  }
+
+  private void updateDeal(Deal deal) {
+    dealDetailsModel =
+        dealDetailsModel
+            .toBuilder()
+            .setDeal(deal)
+            .setRefreshDealError(null)
+            .setRefreshing(false)
+            .build();
+    updateAdapter();
+  }
+
+  private void updateErrorMessage(Throwable throwable) {
+    dealDetailsModel =
+        dealDetailsModel
+            .toBuilder()
+            .setDeal(null)
+            .setRefreshDealError(throwable)
+            .setRefreshing(false)
+            .build();
+    updateAdapter();
+  }
+
+  private void updateProgress() {
+    dealDetailsModel =
+        dealDetailsModel
+            .toBuilder()
+            .setDeal(null)
+            .setRefreshDealError(null)
+            .setRefreshing(true)
+            .build();
+    updateAdapter();
   }
 
   @Override
   protected void onDestroy() {
     subscriptions.clear();
-    Toothpick.closeScope(this);
     super.onDestroy();
+  }
+
+  private class GeneralFeatureEventListener implements FeatureEventListener {
+    @Override
+    public void onFeatureEvent(FeatureEvent featureEvent) {
+      if (featureEvent instanceof OptionClickedEvent) {
+        final Option optionClicked = ((OptionClickedEvent) featureEvent).optionClicked;
+        updateOption(optionClicked);
+      } else if (featureEvent instanceof TraitClickAction) {
+        final int traitIndex = ((TraitClickAction) featureEvent).traitIndex;
+        updateTraitClicked(traitIndex);
+      } else if (featureEvent instanceof VariationClickAction) {
+        final VariationClickAction variationClickAction = (VariationClickAction) featureEvent;
+        final int traitIndex = variationClickAction.traitIndex;
+        final int variationIndex = variationClickAction.variationIndex;
+        updateVariationClicked(traitIndex, variationIndex);
+      }
+    }
   }
 }
