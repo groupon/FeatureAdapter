@@ -31,7 +31,10 @@
  */
 package com.groupon.featureadapter;
 
+import com.groupon.featureadapter.events.FeatureEvent;
 import com.groupon.featureadapter.events.FeatureEventListener;
+import com.groupon.featureadapter.events.FeatureEventSource;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -65,6 +68,8 @@ import java.util.List;
  */
 public abstract class FeatureController<MODEL> {
 
+  private final FeatureEventSource featureEventSource = new FeatureEventSource();
+
   /**
    * @return the list of the {@link AdapterViewTypeDelegate} that will be used to represent each
    *     item on screen.
@@ -96,6 +101,7 @@ public abstract class FeatureController<MODEL> {
    * @param featureEventListener the listener to be added.
    */
   public void addFeatureEventListener(FeatureEventListener featureEventListener) {
+    featureEventSource.addFeatureEventListener(featureEventListener);
     for (AdapterViewTypeDelegate adapterViewTypeDelegate : getAdapterViewTypeDelegates()) {
       adapterViewTypeDelegate.addFeatureEventListener(featureEventListener);
     }
@@ -108,8 +114,18 @@ public abstract class FeatureController<MODEL> {
    * @param featureEventListener the listener to be removed.
    */
   public void removeFeatureEventListener(FeatureEventListener featureEventListener) {
+    featureEventSource.removeFeatureEventListener(featureEventListener);
     for (AdapterViewTypeDelegate adapterViewTypeDelegate : getAdapterViewTypeDelegates()) {
       adapterViewTypeDelegate.removeFeatureEventListener(featureEventListener);
     }
+  }
+
+  /**
+   * Fires an {@link FeatureEvent} to all listeners.
+   *
+   * @param featureEvent the event to be passed to all listeners.
+   */
+  protected void fireEvent(FeatureEvent featureEvent) {
+    featureEventSource.fireEvent(featureEvent);
   }
 }
