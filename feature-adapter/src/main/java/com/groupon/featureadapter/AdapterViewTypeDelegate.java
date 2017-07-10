@@ -64,7 +64,7 @@ public abstract class AdapterViewTypeDelegate<HOLDER extends RecyclerView.ViewHo
     this.viewType = viewType;
   }
 
-  int getViewType() {
+  public int getViewType() {
     return viewType;
   }
 
