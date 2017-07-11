@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -117,7 +118,7 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
    * Updates the whole list of all items associated with all {@link FeatureController}.
    *
    * @param model the input model of all {@link FeatureController} of {@code
-   *     featureControllerGroup}.
+   * featureControllerGroup}.
    */
   @SuppressWarnings("WeakerAccess")
   public void updateFeatureItems(MODEL model) {
@@ -140,6 +141,25 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       diffResult = computeDiffResult(oldItems, newItems);
     }
     return new FeatureUpdate(featureIndex, newItems, diffResult, featureDataSegment);
+  }
+
+  /**
+   * Returns the position of the first view item for a given view type
+   *
+   * @param viewType view type of the feature views. The viewType is returned by {@link AdapterViewTypeDelegate#getViewType}
+   * @return the first position of the view item defined by the given viewType
+   */
+  public int getFirstItemPositionForType(int viewType) {
+    int indexViewItem = 0;
+
+    for (Iterator iterator = this.items.iterator(); iterator.hasNext(); ++indexViewItem) {
+      ViewItem recyclerViewItem = (ViewItem) iterator.next();
+      if (recyclerViewItem.viewType == viewType) {
+        return indexViewItem;
+      }
+    }
+
+    return -1;
   }
 
   /**
