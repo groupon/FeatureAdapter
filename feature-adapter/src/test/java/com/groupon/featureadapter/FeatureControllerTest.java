@@ -31,14 +31,15 @@
  */
 package com.groupon.featureadapter;
 
+import com.groupon.featureadapter.events.FeatureEvent;
+import com.groupon.featureadapter.events.FeatureEventListener;
+
+import org.junit.Test;
+
 import static java.util.Arrays.asList;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-
-import com.groupon.featureadapter.events.FeatureEvent;
-import com.groupon.featureadapter.events.FeatureEventListener;
-import org.junit.Test;
 
 public class FeatureControllerTest {
 
@@ -47,7 +48,7 @@ public class FeatureControllerTest {
     //GIVEN
     AdapterViewTypeDelegate stubAdapterViewTypeDelegate = new StubAdapterViewTypeDelegate();
     FeatureController<String> featureController =
-        new StubFeatureController(asList(stubAdapterViewTypeDelegate));
+        new StubFeatureController<>(asList(stubAdapterViewTypeDelegate));
     FeatureEventListener mockListener = createMock(FeatureEventListener.class);
     final FeatureEvent featureEvent = new FeatureEvent() {};
     mockListener.onFeatureEvent(featureEvent);
@@ -67,7 +68,7 @@ public class FeatureControllerTest {
     //GIVEN
     AdapterViewTypeDelegate stubAdapterViewTypeDelegate = new StubAdapterViewTypeDelegate();
     FeatureController<String> featureController =
-        new StubFeatureController(asList(stubAdapterViewTypeDelegate));
+        new StubFeatureController<>(asList(stubAdapterViewTypeDelegate));
     FeatureEventListener mockListener = createMock(FeatureEventListener.class);
     final FeatureEvent featureEvent = new FeatureEvent() {};
     replay(mockListener);

@@ -31,14 +31,15 @@
  */
 package com.groupon.featureadapter;
 
-import static android.support.v7.widget.RecyclerView.Adapter;
-
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+
 import com.groupon.featureadapter.events.FeatureEvent;
 import com.groupon.featureadapter.events.FeatureEventListener;
 import com.groupon.featureadapter.events.FeatureEventSource;
+
+import static android.support.v7.widget.RecyclerView.Adapter;
 
 /**
  * A delegate of the @link {@link FeaturesAdapter} for a given view type. This entity is responsible
@@ -58,7 +59,7 @@ import com.groupon.featureadapter.events.FeatureEventSource;
 public abstract class AdapterViewTypeDelegate<HOLDER extends RecyclerView.ViewHolder, MODEL> {
 
   private int viewType = RecyclerView.INVALID_TYPE;
-  private FeatureEventSource featureEventSource = new FeatureEventSource();
+  private final FeatureEventSource featureEventSource = new FeatureEventSource();
 
   void setViewType(int viewType) {
     this.viewType = viewType;
