@@ -13,3 +13,7 @@ Releasing
  10. `git push && git push --tags`
 
 If step 5 or 6 fails, drop the Sonatype repo, fix the problem, commit, and start again at step 5.
+
+TODO: 
+* [ ] When the lib is released on central, update 5. & 6.
+* [ ] Remove this comment.
