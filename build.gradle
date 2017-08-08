@@ -40,6 +40,9 @@ buildscript {
 }
 
 allprojects {
+  group = GROUP
+  version = VERSION_NAME
+
   repositories {
     jcenter()
     maven { url "https://jitpack.io" }
