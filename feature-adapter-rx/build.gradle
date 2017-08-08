@@ -37,7 +37,7 @@ dependencies {
 }
 
 license {
-  header = rootProject.file('LICENSE')
+  header = rootProject.file('config/license/LICENSE')
   mapping {
     java = 'SLASHSTAR_STYLE'
   }
