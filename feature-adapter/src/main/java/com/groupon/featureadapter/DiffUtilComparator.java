@@ -24,7 +24,7 @@ package com.groupon.featureadapter;
  *
  * @param <MODEL> the class of the items to compare.
  * @see android.support.v7.util.DiffUtil.Callback
- * @see FeaturesAdapter#updateFeatureItems(FeatureUpdate)
+ * @see FeaturesAdapter#dispatchFeatureUpdate(FeatureUpdate)
  */
 public interface DiffUtilComparator<MODEL> {
 

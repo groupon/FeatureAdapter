@@ -16,17 +16,20 @@
 package com.groupon.featureadapter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
+import android.support.v7.util.DiffUtil.DiffResult;
 import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.ViewGroup;
-import java.util.ArrayList;
-import java.util.Collection;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static android.support.v7.util.DiffUtil.calculateDiff;
 
 /**
  * An adapter of a {@link RecyclerView} that is based on features. Each feature is described a
@@ -34,13 +37,12 @@ import java.util.Map;
  *
  * @param <MODEL> the input model of the {@link FeatureController}s.
  */
+@SuppressWarnings("WeakerAccess")
 public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
 
-  private final List<FeatureController<MODEL>> featureControllers = new ArrayList<>();
-  private final List<FeatureDataSegment> featureDataSegments = new ArrayList<>();
-  private final List<ViewItem> items = new ArrayList<>();
+  private final FeatureItems<MODEL> featureItems;
   private final Map<Integer, AdapterViewTypeDelegate> mapViewTypeToAdapterViewTypeDelegate =
-      new HashMap<>();
+    new HashMap<>();
   private final Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator = new HashMap<>();
 
   /**
@@ -49,13 +51,8 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
    * @param featureControllers the list of feature controllers to install in this adapter.
    */
   public FeaturesAdapter(List<FeatureController<MODEL>> featureControllers) {
-    for (FeatureController featureController : featureControllers) {
-      this.featureControllers.add(featureController);
-      featureDataSegments.add(new FeatureDataSegment());
-      final Collection<AdapterViewTypeDelegate> adapterViewTypeDelegateList =
-          featureController.getAdapterViewTypeDelegates();
-      registerAdapterViewTypeDelegates(adapterViewTypeDelegateList);
-    }
+    featureItems = new FeatureItems<>(featureControllers);
+    registerAdapterViewTypeDelegates(featureItems.getFeatureControllers());
   }
 
   @Override
@@ -65,19 +62,19 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
 
   @Override
   public void onBindViewHolder(ViewHolder holder, int position) {
-    final ViewItem item = items.get(position);
+    final ViewItem item = featureItems.get(position);
     //noinspection unchecked
     mapViewTypeToAdapterViewTypeDelegate.get(item.viewType).bindViewHolder(holder, item.model);
   }
 
   @Override
   public int getItemCount() {
-    return items.size();
+    return featureItems.size();
   }
 
   @Override
   public int getItemViewType(int position) {
-    return items.get(position).viewType;
+    return featureItems.get(position).viewType;
   }
 
   @Override
@@ -106,25 +103,46 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
    */
   @SuppressWarnings("WeakerAccess")
   public void updateFeatureItems(MODEL model) {
-    int featureIndex = 0;
-    for (FeatureController<MODEL> featureController : featureControllers) {
-      updateFeatureItems(toFeatureUpdate(model, featureIndex++, featureController));
+    for (FeatureController<MODEL> featureController : featureItems.getFeatureControllers()) {
+      dispatchFeatureUpdate(toFeatureUpdate(featureController, model));
     }
   }
 
-  @SuppressWarnings("WeakerAccess")
   /* Visible for Rx module. */
-  FeatureUpdate toFeatureUpdate(
-      MODEL model, int featureIndex, FeatureController featureController) {
+  @Nullable
+  FeatureUpdate toFeatureUpdate(FeatureController<MODEL> featureController, MODEL model) {
+    final List<ViewItem> oldItems = featureItems.getItems(featureController);
     final List<ViewItem> newItems = featureController.buildItems(model);
-    FeatureDataSegment featureDataSegment = null;
-    DiffUtil.DiffResult diffResult = null;
-    if (newItems != null) {
-      featureDataSegment = featureDataSegments.get(featureIndex);
-      List<? extends ViewItem> oldItems = featureDataSegment.items;
-      diffResult = computeDiffResult(oldItems, newItems);
+    if (newItems == null) {
+      return null;
     }
-    return new FeatureUpdate(featureIndex, newItems, diffResult, featureDataSegment);
+    final DiffUtilCallbackImpl callback = new DiffUtilCallbackImpl(mapViewTypeToItemComparator, oldItems, newItems);
+    final DiffResult diffResult = calculateDiff(callback, false);
+    return new FeatureUpdate(featureController, newItems, diffResult);
+  }
+
+  /* Visible for Rx module. */
+  List<FeatureUpdate> dispatchFeatureUpdates(@NonNull List<FeatureUpdate> featureUpdates) {
+    for (FeatureUpdate featureUpdate : featureUpdates) {
+      dispatchFeatureUpdate(featureUpdate);
+    }
+    return featureUpdates;
+  }
+
+  /* Visible for Rx module. */
+  FeatureUpdate dispatchFeatureUpdate(@Nullable FeatureUpdate featureUpdate) {
+    if (featureUpdate == null) {
+      return null;
+    }
+    // noinspection unchecked
+    final int offset = featureItems.setItemsAndGetOffset(featureUpdate.newItems, featureUpdate.featureController);
+    featureUpdate.diffResult.dispatchUpdatesTo(new ListUpdateCallbackImpl(this, offset));
+    return featureUpdate;
+  }
+
+  /* Visible for Rx module. */
+  List<FeatureController<MODEL>> getFeatureControllers() {
+    return featureItems.getFeatureControllers();
   }
 
   /**
@@ -134,10 +152,11 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
    *     AdapterViewTypeDelegate#getViewType}
    * @return the first position of the view item defined by the given viewType
    */
+  @SuppressWarnings("unused")
   public int getFirstItemPositionForType(int viewType) {
     int indexViewItem = 0;
 
-    for (Iterator iterator = this.items.iterator(); iterator.hasNext(); ++indexViewItem) {
+    for (Iterator iterator = this.featureItems.iterator(); iterator.hasNext(); ++indexViewItem) {
       ViewItem recyclerViewItem = (ViewItem) iterator.next();
       if (recyclerViewItem.viewType == viewType) {
         return indexViewItem;
@@ -147,88 +166,17 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     return -1;
   }
 
-  /**
-   * Updates the list of items associated with a {@code featureController} with a new list of {@link
-   * ViewItem}s. DiffUtil is used to update the recycler view and animate the update on the list of
-   * items. <em>Warning</em>: Must be called on UI Thread.
-   *
-   * @param featureUpdate the update to apply.
-   */
-  @SuppressWarnings("WeakerAccess")
-  /* Visible for Rx module. */
-  void updateFeatureItems(@NonNull FeatureUpdate featureUpdate) {
-    if (featureUpdate.newItems == null) {
-      return;
-    }
-    //needs UI thread because we use the items list that is read on UI Thread
-    //and anyway the list can't be modified in a thread pool like computation
-    final int offset = computeFeatureOffset(featureUpdate.featureIndex);
-    updateItems(offset, featureUpdate.dataSegment, featureUpdate.newItems);
-    //needs UI thread to update UI
-    dispatch(featureUpdate.diffResult, offset);
-  }
-
-  @SuppressWarnings("WeakerAccess")
-  /* Visible for Rx module. */
-  List<FeatureController<MODEL>> getFeatureControllers() {
-    return featureControllers;
-  }
-
-  private DiffUtil.DiffResult computeDiffResult(
-      List<? extends ViewItem> oldItems, List<? extends ViewItem> newItems) {
-    // notify items changed/inserted/removed
-    return DiffUtil.calculateDiff(
-        new DiffUtilCallbackImpl(mapViewTypeToItemComparator, oldItems, newItems), false);
-  }
-
-  private void updateItems(
-      int offset, FeatureDataSegment dataSegment, @NonNull List<? extends ViewItem> newItems) {
-    // removeFeatureEventListener old items
-    if (!dataSegment.items.isEmpty()) {
-      for (int index = 0; index < dataSegment.items.size(); index++) {
-        items.remove(offset);
+  private void registerAdapterViewTypeDelegates(List<FeatureController<MODEL>> featureControllers) {
+    for (FeatureController<MODEL> featureController : featureControllers) {
+      for (AdapterViewTypeDelegate delegate : featureController.getAdapterViewTypeDelegates()) {
+        // assign unique view type
+        delegate.setViewType(mapViewTypeToAdapterViewTypeDelegate.size());
+        // register delegate
+        mapViewTypeToAdapterViewTypeDelegate.put(delegate.getViewType(), delegate);
+        // register item comparator
+        mapViewTypeToItemComparator.put(delegate.getViewType(), delegate.createDiffUtilComparator());
       }
     }
-
-    // addFeatureEventListener new items
-    if (!newItems.isEmpty()) {
-      items.addAll(offset, newItems);
-    }
-    dataSegment.items = newItems;
-  }
-
-  private void dispatch(DiffUtil.DiffResult diffResult, int offset) {
-    if (diffResult == null) {
-      return;
-    }
-    diffResult.dispatchUpdatesTo(new ListUpdateCallbackImpl(this, offset));
-  }
-
-  private int computeFeatureOffset(int featureIndex) {
-    int offset = 0;
-    for (int indexRange = 0; indexRange < featureIndex; indexRange++) {
-      offset += featureDataSegments.get(indexRange).items.size();
-    }
-    return offset;
-  }
-
-  private void registerAdapterViewTypeDelegates(
-      Collection<AdapterViewTypeDelegate> adapterViewTypeDelegates) {
-    for (AdapterViewTypeDelegate adapterViewTypeDelegate : adapterViewTypeDelegates) {
-      int viewType = mapViewTypeToAdapterViewTypeDelegate.size();
-
-      //register the binder itself
-      adapterViewTypeDelegate.setViewType(viewType);
-      mapViewTypeToAdapterViewTypeDelegate.put(viewType, adapterViewTypeDelegate);
-
-      //register its comparator
-      DiffUtilComparator diffUtilComparator = adapterViewTypeDelegate.createDiffUtilComparator();
-      mapViewTypeToItemComparator.put(viewType, diffUtilComparator);
-    }
-  }
-
-  public static class FeatureDataSegment {
-    List<? extends ViewItem> items = new ArrayList<>();
   }
 
   /**
@@ -242,9 +190,9 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     private final List<? extends ViewItem> newList;
 
     DiffUtilCallbackImpl(
-        Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator,
-        List<? extends ViewItem> oldList,
-        List<? extends ViewItem> newList) {
+      Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator,
+      List<? extends ViewItem> oldList,
+      List<? extends ViewItem> newList) {
       this.mapViewTypeToItemComparator = mapViewTypeToItemComparator;
       this.oldList = oldList;
       this.newList = newList;
@@ -265,10 +213,8 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       final ViewItem oldItem = oldList.get(oldItemPosition);
       final ViewItem newItem = newList.get(newItemPosition);
       // noinspection unchecked
-      return oldItem.viewType == newItem.viewType
-          && mapViewTypeToItemComparator
-              .get(oldItem.viewType)
-              .areItemsTheSame(oldItem.model, newItem.model);
+      return oldItem.viewType == newItem.viewType &&
+        mapViewTypeToItemComparator.get(oldItem.viewType).areItemsTheSame(oldItem.model, newItem.model);
     }
 
     @Override
@@ -276,9 +222,7 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       final ViewItem oldItem = oldList.get(oldItemPosition);
       final ViewItem newItem = newList.get(newItemPosition);
       // noinspection unchecked
-      return mapViewTypeToItemComparator
-          .get(oldItem.viewType)
-          .areContentsTheSame(oldItem.model, newItem.model);
+      return mapViewTypeToItemComparator.get(oldItem.viewType).areContentsTheSame(oldItem.model, newItem.model);
     }
   }
 
