@@ -15,14 +15,17 @@
  */
 package com.groupon.featureadapter;
 
-import static android.support.v7.widget.RecyclerView.Adapter;
-
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+
 import com.groupon.featureadapter.events.FeatureEvent;
 import com.groupon.featureadapter.events.FeatureEventListener;
 import com.groupon.featureadapter.events.FeatureEventSource;
+
+import java.util.List;
+
+import static android.support.v7.widget.RecyclerView.Adapter;
 
 /**
  * A delegate of the @link {@link FeaturesAdapter} for a given view type. This entity is responsible
@@ -80,6 +83,23 @@ public abstract class AdapterViewTypeDelegate<HOLDER extends RecyclerView.ViewHo
    * @param model The Model containing all the data for the ViewHolder to bind to
    */
   public abstract void bindViewHolder(HOLDER holder, MODEL model);
+
+  /**
+   * Called by the Adapter from {@link Adapter#onBindViewHolder(RecyclerView.ViewHolder, int, List)}.
+   * Maps the data back to the view, using a non empty PayLoad.
+   *
+   * <p>The default implementation discards the {@code payloads} information and just calls {@link
+   * #bindViewHolder(RecyclerView.ViewHolder, MODEL)}. Override, if you want to implement more
+   * fine-grained, payload based updates.
+   *
+   * @param holder The ViewHolder which should be updated to represent the contents of the item at
+   *     the given position in the data set.
+   * @param model The Model containing all the data for the ViewHolder to bind to.
+   * @param payloads the payload of changes. An empty list means the view holder needs full re-bind.
+   */
+  public void bindViewHolder(HOLDER holder, MODEL model, List<Object> payloads) {
+    bindViewHolder(holder, model);
+  }
 
   /**
    * Called by the Adapter from {@link Adapter#onViewRecycled(RecyclerView.ViewHolder)}
