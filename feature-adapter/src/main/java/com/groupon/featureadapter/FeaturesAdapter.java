@@ -68,6 +68,13 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
   }
 
   @Override
+  public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
+    final ViewItem item = featureItems.get(position);
+    //noinspection unchecked
+    mapViewTypeToAdapterViewTypeDelegate.get(item.viewType).bindViewHolder(holder, item.model, payloads);
+  }
+
+  @Override
   public int getItemCount() {
     return featureItems.size();
   }
@@ -223,6 +230,15 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       final ViewItem newItem = newList.get(newItemPosition);
       // noinspection unchecked
       return mapViewTypeToItemComparator.get(oldItem.viewType).areContentsTheSame(oldItem.model, newItem.model);
+    }
+
+    @Nullable
+    @Override
+    public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+      final ViewItem oldItem = oldList.get(oldItemPosition);
+      final ViewItem newItem = newList.get(newItemPosition);
+      // noinspection unchecked
+      return mapViewTypeToItemComparator.get(oldItem.viewType).getChangePayload(oldItem.model, newItem.model);
     }
   }
 

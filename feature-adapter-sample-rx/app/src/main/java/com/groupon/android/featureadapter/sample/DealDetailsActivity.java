@@ -7,8 +7,10 @@ import static solid.collectors.ToSolidList.toSolidList;
 import static solid.stream.Stream.stream;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +29,7 @@ import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.RxFeaturesAdapter;
 import com.groupon.featureadapter.events.FeatureEvent;
 import com.groupon.featureadapter.events.FeatureEventListener;
+import java.util.List;
 import rx.subscriptions.CompositeSubscription;
 import solid.collections.SolidList;
 
@@ -53,8 +56,19 @@ public class DealDetailsActivity extends AppCompatActivity {
 
     recycler = (RecyclerView) findViewById(R.id.recycler_view);
     recycler.setHasFixedSize(true);
-    recycler.setLayoutManager(new FlexboxLayoutManager());
+    recycler.setLayoutManager(new FlexboxLayoutManager(this));
     recycler.setAdapter(adapter);
+    recycler.setItemAnimator(new DefaultItemAnimator(){
+      @Override
+      public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) {
+        return true;
+      }
+
+      @Override
+      public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, @NonNull List<Object> payloads) {
+        return true;
+      }
+    });
     progressBar = (ProgressBar) findViewById(R.id.progress);
 
     Button buttonRefresh = (Button) findViewById(R.id.button_refresh);
@@ -147,10 +161,15 @@ public class DealDetailsActivity extends AppCompatActivity {
   }
 
   private void updateDeal(Deal deal) {
+    Option option = dealDetailsModel.getOption() != null
+      ? dealDetailsModel.getOption()
+      : deal.getOptions().first().get();
     dealDetailsModel =
         dealDetailsModel
             .toBuilder()
             .setDeal(deal)
+            .setOption(option)
+            .setSummary(option.getTitle())
             .setRefreshDealError(null)
             .setRefreshing(false)
             .build();

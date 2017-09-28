@@ -10,14 +10,14 @@ import com.groupon.android.featureadapter.sample.model.Variation;
 import com.groupon.android.featureadapter.sample.rx.R;
 import com.groupon.featureadapter.AdapterViewTypeDelegate;
 import com.groupon.featureadapter.DiffUtilComparator;
+import java.util.List;
 
-public class VariationAdapterViewTypeDelegate
-    extends AdapterViewTypeDelegate<
-        VariationAdapterViewTypeDelegate.VariationViewHolder, Variation> {
+class VariationAdapterViewTypeDelegate
+  extends AdapterViewTypeDelegate<VariationAdapterViewTypeDelegate.VariationViewHolder, Variation> {
 
   private static final int LAYOUT = R.layout.iv_variation;
 
-  public VariationAdapterViewTypeDelegate() {}
+  VariationAdapterViewTypeDelegate() {}
 
   @Override
   public VariationViewHolder createViewHolder(ViewGroup parent) {
@@ -30,7 +30,16 @@ public class VariationAdapterViewTypeDelegate
     holder.valueText.setText(model.getValue());
     holder.valueText.setSelected(model.isSelected());
     holder.itemView.setOnClickListener(
-        v -> fireEvent(new VariationClickAction(model.getTraitIndex(), model.getIndex())));
+      v -> fireEvent(new VariationClickAction(model.getTraitIndex(), model.getIndex())));
+  }
+
+  @Override
+  public void bindViewHolder(VariationViewHolder holder, Variation variation, List<Object> payloads) {
+    if (!payloads.isEmpty()) {
+      holder.valueText.setSelected((boolean) payloads.get(0));
+    } else {
+      bindViewHolder(holder, variation);
+    }
   }
 
   @Override

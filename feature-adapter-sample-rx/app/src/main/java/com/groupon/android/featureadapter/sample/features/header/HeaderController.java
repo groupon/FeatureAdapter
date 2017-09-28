@@ -5,8 +5,10 @@ import com.groupon.android.featureadapter.sample.model.Option;
 import com.groupon.featureadapter.AdapterViewTypeDelegate;
 import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.ViewItem;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
+import static java.util.Collections.singletonList;
 
 public class HeaderController extends FeatureController<DealDetailsModel> {
 
@@ -28,10 +30,8 @@ public class HeaderController extends FeatureController<DealDetailsModel> {
       memorizeUpdate(model);
     }
 
-    HeaderModel summaryModel = new HeaderModel();
-    summaryModel.title = model.getSummary();
-    summaryModel.imageUrl = model.getOption().getImageUrl();
-    return Arrays.asList(new ViewItem<>(summaryModel, headerAdapterViewTypeDelegate));
+    HeaderModel summaryModel = new HeaderModel(model.getSummary(), model.getOption().getImageUrl());
+    return singletonList(new ViewItem<>(summaryModel, headerAdapterViewTypeDelegate));
   }
 
   private void memorizeUpdate(DealDetailsModel model) {
@@ -40,11 +40,11 @@ public class HeaderController extends FeatureController<DealDetailsModel> {
   }
 
   private boolean hasChangedSinceLastUpdate(DealDetailsModel model) {
-    return model.getOption() == oldOption && model.getSummary() == oldTitle;
+    return model.getOption() == oldOption && Objects.equals(model.getSummary(), oldTitle);
   }
 
   @Override
   public List<AdapterViewTypeDelegate> getAdapterViewTypeDelegates() {
-    return Arrays.asList(headerAdapterViewTypeDelegate);
+    return singletonList(headerAdapterViewTypeDelegate);
   }
 }

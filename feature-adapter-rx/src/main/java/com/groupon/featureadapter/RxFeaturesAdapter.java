@@ -62,7 +62,8 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
           //correctly using the tick observable
           feature -> just(feature)
             .observeOn(computation())
-            .map(featureController -> toFeatureUpdate(featureController, model)))
+            .map(featureController -> toFeatureUpdate(featureController, model))
+            .filter(featureUpdate -> featureUpdate != null))
         //collect all observable of feature updates in a list in feature order
         .toSortedList(featureUpdateComparator::compare)
         .observeOn(mainThread())

@@ -43,4 +43,15 @@ public class DefaultDiffUtilComparator<MODEL> implements DiffUtilComparator<MODE
   public boolean areContentsTheSame(MODEL oldModel, MODEL newModel) {
     return oldModel.equals(newModel);
   }
+
+  /**
+   *
+   * @param oldModel the item in the old list.
+   * @param newModel the item in the new list.
+   * @return default to null
+   */
+  @Override
+  public Object getChangePayload(MODEL oldModel, MODEL newModel) {
+    return null;
+  }
 }
