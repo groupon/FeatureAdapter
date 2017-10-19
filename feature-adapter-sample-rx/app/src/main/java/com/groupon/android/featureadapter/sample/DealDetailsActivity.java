@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2017, Groupon, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.groupon.android.featureadapter.sample;
 
 import static rx.Observable.just;
@@ -58,17 +73,19 @@ public class DealDetailsActivity extends AppCompatActivity {
     recycler.setHasFixedSize(true);
     recycler.setLayoutManager(new FlexboxLayoutManager(this));
     recycler.setAdapter(adapter);
-    recycler.setItemAnimator(new DefaultItemAnimator(){
-      @Override
-      public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) {
-        return true;
-      }
+    recycler.setItemAnimator(
+        new DefaultItemAnimator() {
+          @Override
+          public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) {
+            return true;
+          }
 
-      @Override
-      public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, @NonNull List<Object> payloads) {
-        return true;
-      }
-    });
+          @Override
+          public boolean canReuseUpdatedViewHolder(
+              @NonNull RecyclerView.ViewHolder viewHolder, @NonNull List<Object> payloads) {
+            return true;
+          }
+        });
     progressBar = (ProgressBar) findViewById(R.id.progress);
 
     Button buttonRefresh = (Button) findViewById(R.id.button_refresh);
@@ -161,9 +178,10 @@ public class DealDetailsActivity extends AppCompatActivity {
   }
 
   private void updateDeal(Deal deal) {
-    Option option = dealDetailsModel.getOption() != null
-      ? dealDetailsModel.getOption()
-      : deal.getOptions().first().get();
+    Option option =
+        dealDetailsModel.getOption() != null
+            ? dealDetailsModel.getOption()
+            : deal.getOptions().first().get();
     dealDetailsModel =
         dealDetailsModel
             .toBuilder()

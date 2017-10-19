@@ -34,6 +34,6 @@ public interface DiffUtilComparator<MODEL> {
   /** @see android.support.v7.util.DiffUtil.Callback#areContentsTheSame(int, int) */
   boolean areContentsTheSame(MODEL oldModel, MODEL newModel);
 
-  /** @see android.support.v7.util.DiffUtil.Callback#getChangePayload(int, int)  */
+  /** @see android.support.v7.util.DiffUtil.Callback#getChangePayload(int, int) */
   Object getChangePayload(MODEL oldModel, MODEL newModel);
 }

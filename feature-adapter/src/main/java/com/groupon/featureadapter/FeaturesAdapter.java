@@ -15,6 +15,8 @@
  */
 package com.groupon.featureadapter;
 
+import static android.support.v7.util.DiffUtil.calculateDiff;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
@@ -23,13 +25,10 @@ import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.ViewGroup;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import static android.support.v7.util.DiffUtil.calculateDiff;
 
 /**
  * An adapter of a {@link RecyclerView} that is based on features. Each feature is described a
@@ -42,7 +41,7 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
 
   private final FeatureItems<MODEL> featureItems;
   private final Map<Integer, AdapterViewTypeDelegate> mapViewTypeToAdapterViewTypeDelegate =
-    new HashMap<>();
+      new HashMap<>();
   private final Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator = new HashMap<>();
 
   /**
@@ -71,7 +70,9 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
   public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
     final ViewItem item = featureItems.get(position);
     //noinspection unchecked
-    mapViewTypeToAdapterViewTypeDelegate.get(item.viewType).bindViewHolder(holder, item.model, payloads);
+    mapViewTypeToAdapterViewTypeDelegate
+        .get(item.viewType)
+        .bindViewHolder(holder, item.model, payloads);
   }
 
   @Override
@@ -123,7 +124,8 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     if (newItems == null) {
       return null;
     }
-    final DiffUtilCallbackImpl callback = new DiffUtilCallbackImpl(mapViewTypeToItemComparator, oldItems, newItems);
+    final DiffUtilCallbackImpl callback =
+        new DiffUtilCallbackImpl(mapViewTypeToItemComparator, oldItems, newItems);
     final DiffResult diffResult = calculateDiff(callback, false);
     return new FeatureUpdate(featureController, newItems, diffResult);
   }
@@ -142,7 +144,8 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       return null;
     }
     // noinspection unchecked
-    final int offset = featureItems.setItemsAndGetOffset(featureUpdate.newItems, featureUpdate.featureController);
+    final int offset =
+        featureItems.setItemsAndGetOffset(featureUpdate.newItems, featureUpdate.featureController);
     featureUpdate.diffResult.dispatchUpdatesTo(new ListUpdateCallbackImpl(this, offset));
     return featureUpdate;
   }
@@ -181,7 +184,8 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
         // register delegate
         mapViewTypeToAdapterViewTypeDelegate.put(delegate.getViewType(), delegate);
         // register item comparator
-        mapViewTypeToItemComparator.put(delegate.getViewType(), delegate.createDiffUtilComparator());
+        mapViewTypeToItemComparator.put(
+            delegate.getViewType(), delegate.createDiffUtilComparator());
       }
     }
   }
@@ -197,9 +201,9 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     private final List<? extends ViewItem> newList;
 
     DiffUtilCallbackImpl(
-      Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator,
-      List<? extends ViewItem> oldList,
-      List<? extends ViewItem> newList) {
+        Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator,
+        List<? extends ViewItem> oldList,
+        List<? extends ViewItem> newList) {
       this.mapViewTypeToItemComparator = mapViewTypeToItemComparator;
       this.oldList = oldList;
       this.newList = newList;
@@ -220,8 +224,10 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       final ViewItem oldItem = oldList.get(oldItemPosition);
       final ViewItem newItem = newList.get(newItemPosition);
       // noinspection unchecked
-      return oldItem.viewType == newItem.viewType &&
-        mapViewTypeToItemComparator.get(oldItem.viewType).areItemsTheSame(oldItem.model, newItem.model);
+      return oldItem.viewType == newItem.viewType
+          && mapViewTypeToItemComparator
+              .get(oldItem.viewType)
+              .areItemsTheSame(oldItem.model, newItem.model);
     }
 
     @Override
@@ -229,7 +235,9 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       final ViewItem oldItem = oldList.get(oldItemPosition);
       final ViewItem newItem = newList.get(newItemPosition);
       // noinspection unchecked
-      return mapViewTypeToItemComparator.get(oldItem.viewType).areContentsTheSame(oldItem.model, newItem.model);
+      return mapViewTypeToItemComparator
+          .get(oldItem.viewType)
+          .areContentsTheSame(oldItem.model, newItem.model);
     }
 
     @Nullable
@@ -238,7 +246,9 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       final ViewItem oldItem = oldList.get(oldItemPosition);
       final ViewItem newItem = newList.get(newItemPosition);
       // noinspection unchecked
-      return mapViewTypeToItemComparator.get(oldItem.viewType).getChangePayload(oldItem.model, newItem.model);
+      return mapViewTypeToItemComparator
+          .get(oldItem.viewType)
+          .getChangePayload(oldItem.model, newItem.model);
     }
   }
 

@@ -17,7 +17,6 @@ package com.groupon.featureadapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil.DiffResult;
-
 import java.util.List;
 
 public class FeatureUpdate {
@@ -25,7 +24,10 @@ public class FeatureUpdate {
   @NonNull public final List<ViewItem> newItems;
   @NonNull public final DiffResult diffResult;
 
-  public FeatureUpdate(@NonNull FeatureController featureController, @NonNull List<ViewItem> newItems, @NonNull DiffResult diffResult) {
+  public FeatureUpdate(
+      @NonNull FeatureController featureController,
+      @NonNull List<ViewItem> newItems,
+      @NonNull DiffResult diffResult) {
     this.featureController = featureController;
     this.newItems = newItems;
     this.diffResult = diffResult;

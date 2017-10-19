@@ -15,18 +15,17 @@
  */
 package com.groupon.featureadapter;
 
-import java.util.Comparator;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
-
 import static rx.Observable.from;
 import static rx.Observable.just;
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
 import static rx.schedulers.Schedulers.computation;
+
+import java.util.Comparator;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
 
@@ -45,43 +44,49 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
    * @return an observable of {@link FeatureUpdate} for tracking the adapter changes.
    */
   public Observable<FeatureUpdate> updateFeatureItems(Observable<MODEL> modelObservable) {
-    //the ticker observable is gonna emit an item every time all the
-    //list of items from all the feature controllers have been computed
-    //so we just process the model instances one at a time
-    //this is meant to be a very fine grained back pressure mechanism.
+    // the ticker observable is gonna emit an item every time all the
+    // list of items from all the feature controllers have been computed
+    // so we just process the model instances one at a time
+    // this is meant to be a very fine grained back pressure mechanism.
     BehaviorSubject<Object> tickObservable = BehaviorSubject.create();
     tickObservable.onNext(null);
     return modelObservable
-      .observeOn(mainThread())
-      .zipWith(tickObservable, (model, tick) -> model)
-      .flatMap(model -> from(getFeatureControllers())
-        .flatMap(
-          //each feature controller receives a fork of the model observable
-          //and compute its items in parallel, and then updates the UI ASAP
-          //but we still aggregate all the list to be sure to pace the model observable
-          //correctly using the tick observable
-          feature -> just(feature)
-            .observeOn(computation())
-            .map(featureController -> toFeatureUpdate(featureController, model))
-            .filter(featureUpdate -> featureUpdate != null))
-        //collect all observable of feature updates in a list in feature order
-        .toSortedList(featureUpdateComparator::compare)
         .observeOn(mainThread())
-        //dispatch each feature update in order to the adapter
-        //(this also updates the internal adapter state)
-        .map(this::dispatchFeatureUpdates)
-        .map(list -> {
-          tickObservable.onNext(null);
-          return list;
-        })
-        // convert the list of FeatureUpdate to an observable that emits the feature updates
-        .flatMap(Observable::from)
-      );
+        .zipWith(tickObservable, (model, tick) -> model)
+        .flatMap(
+            model ->
+                from(getFeatureControllers())
+                    .flatMap(
+                        // each feature controller receives a fork of the model observable
+                        // and compute its items in parallel, and then updates the UI ASAP
+                        // but we still aggregate all the list to be sure to pace the model
+                        // observable
+                        // correctly using the tick observable
+                        feature ->
+                            just(feature)
+                                .observeOn(computation())
+                                .map(featureController -> toFeatureUpdate(featureController, model))
+                                .filter(featureUpdate -> featureUpdate != null))
+                    // collect all observable of feature updates in a list in feature order
+                    .toSortedList(featureUpdateComparator::compare)
+                    .observeOn(mainThread())
+                    // dispatch each feature update in order to the adapter
+                    // (this also updates the internal adapter state)
+                    .map(this::dispatchFeatureUpdates)
+                    .map(
+                        list -> {
+                          tickObservable.onNext(null);
+                          return list;
+                        })
+                    // convert the list of FeatureUpdate to an observable that emits the feature
+                    // updates
+                    .flatMap(Observable::from));
   }
 
   private static class FeatureUpdateComparator<T> implements Comparator<FeatureUpdate> {
 
-    private final Map<FeatureController, Integer> mapFeatureControllerToIndex = new IdentityHashMap<>();
+    private final Map<FeatureController, Integer> mapFeatureControllerToIndex =
+        new IdentityHashMap<>();
 
     FeatureUpdateComparator(List<FeatureController<T>> featureControllers) {
       int idx = 0;
@@ -92,7 +97,8 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
 
     @Override
     public int compare(FeatureUpdate o1, FeatureUpdate o2) {
-      return mapFeatureControllerToIndex.get(o1.featureController) - mapFeatureControllerToIndex.get(o2.featureController);
+      return mapFeatureControllerToIndex.get(o1.featureController)
+          - mapFeatureControllerToIndex.get(o2.featureController);
     }
   }
 }

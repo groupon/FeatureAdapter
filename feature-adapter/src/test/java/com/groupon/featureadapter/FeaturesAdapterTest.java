@@ -15,13 +15,6 @@
  */
 package com.groupon.featureadapter;
 
-import android.content.Context;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import org.junit.Test;
-import java.util.ArrayList;
-import java.util.List;
-
 import static android.support.v7.widget.RecyclerView.INVALID_TYPE;
 import static android.support.v7.widget.RecyclerView.ViewHolder;
 import static com.groupon.featureadapter.TestUtils.fixAdapterForTesting;
@@ -37,6 +30,13 @@ import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+
+import android.content.Context;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Test;
 
 public class FeaturesAdapterTest {
 
@@ -112,7 +112,7 @@ public class FeaturesAdapterTest {
     StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate1 = new StubAdapterViewTypeDelegate();
     List<ViewItem> items = new ArrayList<>();
     List<FeatureController<String>> featureControllers =
-      asList(
+        asList(
             new StubFeatureController<>(
                 asList(stubAdapterViewTypeDelegate0, stubAdapterViewTypeDelegate1), items));
     FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
@@ -153,7 +153,7 @@ public class FeaturesAdapterTest {
 
     List<ViewItem> items = new ArrayList<>();
     List<FeatureController<String>> featureControllers =
-      asList(
+        asList(
             new StubFeatureController<>(
                 asList(stubAdapterViewTypeDelegate0, stubAdapterViewTypeDelegate1), items));
     FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
@@ -186,7 +186,7 @@ public class FeaturesAdapterTest {
 
     List<ViewItem> items = new ArrayList<>();
     List<FeatureController<String>> featureControllers =
-      singletonList(
+        singletonList(
             new StubFeatureController<>(
                 asList(stubAdapterViewTypeDelegate0, stubAdapterViewTypeDelegate1), items));
     FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
@@ -204,25 +204,26 @@ public class FeaturesAdapterTest {
   }
 
   @Test
-  public void onBindViewHolder_with_payload_should_useTheRightAdapterViewTypeDelegateForAGivenPosition()
-    throws Exception {
+  public void
+      onBindViewHolder_with_payload_should_useTheRightAdapterViewTypeDelegateForAGivenPosition()
+          throws Exception {
     //GIVEN
     final LinearLayout parent = new LinearLayout(createMock(Context.class));
     StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate0 =
-      createNiceMock(StubAdapterViewTypeDelegate.class);
+        createNiceMock(StubAdapterViewTypeDelegate.class);
     StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate1 =
-      createNiceMock(StubAdapterViewTypeDelegate.class);
+        createNiceMock(StubAdapterViewTypeDelegate.class);
     expect(stubAdapterViewTypeDelegate0.getViewType()).andReturn(0).anyTimes();
     expect(stubAdapterViewTypeDelegate1.getViewType()).andReturn(1).anyTimes();
-    stubAdapterViewTypeDelegate1
-      .bindViewHolder(anyObject(ViewHolder.class), eq("a1"), eq(singletonList("payload")));
+    stubAdapterViewTypeDelegate1.bindViewHolder(
+        anyObject(ViewHolder.class), eq("a1"), eq(singletonList("payload")));
     replay(stubAdapterViewTypeDelegate0, stubAdapterViewTypeDelegate1);
 
     List<ViewItem> items = new ArrayList<>();
     List<FeatureController<String>> featureControllers =
-      singletonList(
-        new StubFeatureController<>(
-          asList(stubAdapterViewTypeDelegate0, stubAdapterViewTypeDelegate1), items));
+        singletonList(
+            new StubFeatureController<>(
+                asList(stubAdapterViewTypeDelegate0, stubAdapterViewTypeDelegate1), items));
     FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
     fixAdapterForTesting(featuresAdapter);
 

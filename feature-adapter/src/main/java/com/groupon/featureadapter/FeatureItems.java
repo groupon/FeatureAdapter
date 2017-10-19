@@ -15,26 +15,26 @@
  */
 package com.groupon.featureadapter;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
+
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.unmodifiableList;
-
 /**
- * Maintains adapter feature order, item position / ownership
- * WARNING: this class is not thread safe. RxFeatureAdapter guarantees the current state with its
- * behavior.
+ * Maintains adapter feature order, item position / ownership WARNING: this class is not thread
+ * safe. RxFeatureAdapter guarantees the current state with its behavior.
  *
  * @param <MODEL> the input model of the {@link FeatureController}s and {@link FeaturesAdapter}
  */
 class FeatureItems<MODEL> {
 
   private final List<FeatureController<MODEL>> featureControllers = new ArrayList<>();
-  private final Map<FeatureController<MODEL>, List<ViewItem>> mapFeatureControllerToItems = new IdentityHashMap<>();
+  private final Map<FeatureController<MODEL>, List<ViewItem>> mapFeatureControllerToItems =
+      new IdentityHashMap<>();
   private final List<ViewItem> items = new ArrayList<>();
 
   FeatureItems(List<FeatureController<MODEL>> featureControllers) {

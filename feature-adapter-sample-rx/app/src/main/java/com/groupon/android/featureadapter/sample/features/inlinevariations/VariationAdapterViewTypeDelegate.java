@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2017, Groupon, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.groupon.android.featureadapter.sample.features.inlinevariations;
 
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +28,8 @@ import com.groupon.featureadapter.DiffUtilComparator;
 import java.util.List;
 
 class VariationAdapterViewTypeDelegate
-  extends AdapterViewTypeDelegate<VariationAdapterViewTypeDelegate.VariationViewHolder, Variation> {
+    extends AdapterViewTypeDelegate<
+        VariationAdapterViewTypeDelegate.VariationViewHolder, Variation> {
 
   private static final int LAYOUT = R.layout.iv_variation;
 
@@ -30,11 +46,12 @@ class VariationAdapterViewTypeDelegate
     holder.valueText.setText(model.getValue());
     holder.valueText.setSelected(model.isSelected());
     holder.itemView.setOnClickListener(
-      v -> fireEvent(new VariationClickAction(model.getTraitIndex(), model.getIndex())));
+        v -> fireEvent(new VariationClickAction(model.getTraitIndex(), model.getIndex())));
   }
 
   @Override
-  public void bindViewHolder(VariationViewHolder holder, Variation variation, List<Object> payloads) {
+  public void bindViewHolder(
+      VariationViewHolder holder, Variation variation, List<Object> payloads) {
     if (!payloads.isEmpty()) {
       holder.valueText.setSelected((boolean) payloads.get(0));
     } else {

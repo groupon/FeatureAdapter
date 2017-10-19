@@ -45,7 +45,6 @@ public class DefaultDiffUtilComparator<MODEL> implements DiffUtilComparator<MODE
   }
 
   /**
-   *
    * @param oldModel the item in the old list.
    * @param newModel the item in the new list.
    * @return default to null

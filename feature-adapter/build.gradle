@@ -32,12 +32,5 @@ dependencies {
   testCompile deps.easymock
 }
 
-license {
-  header = rootProject.file('config/license/LICENSE')
-  mapping {
-    java = 'SLASHSTAR_STYLE'
-  }
-}
-
 apply plugin: 'android-maven-publish'
 apply plugin: 'groupon-nexus-publish'

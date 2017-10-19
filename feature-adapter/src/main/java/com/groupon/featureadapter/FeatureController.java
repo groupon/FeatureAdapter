@@ -18,7 +18,6 @@ package com.groupon.featureadapter;
 import com.groupon.featureadapter.events.FeatureEvent;
 import com.groupon.featureadapter.events.FeatureEventListener;
 import com.groupon.featureadapter.events.FeatureEventSource;
-
 import java.util.Collection;
 import java.util.List;
 

@@ -63,6 +63,21 @@ allprojects {
     pmd_rulesetFile = "${project.rootDir}/config/pmd/pmd-ruleset.xml"
     findbugs_excludeFile = "${project.rootDir}/config/findbugs/excludeFilter.xml"
   }
+
+  apply plugin: 'com.github.hierynomus.license'
+
+  task licenseFormatSrc (type:nl.javadude.gradle.plugins.license.License) {
+    source = files("src/main/java", "src/test/java")
+  }
+  licenseFormat.dependsOn licenseFormatSrc
+
+  license {
+    header = rootProject.file('config/license/LICENSE')
+    mapping {
+      java = 'SLASHSTAR_STYLE'
+    }
+    exclude "**/*.xml"
+  }
 }
 
 task clean(type: Delete) {
