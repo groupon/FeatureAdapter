@@ -1,10 +1,9 @@
-apply plugin: 'findbugs'
+apply plugin: 'net.ltgt.errorprone'
 apply plugin: 'pmd'
 
 
-findbugs {
-  ignoreFailures = false
-  excludeFilter = file("${findbugs_excludeFile}")
+dependencies {
+  errorprone 'com.google.errorprone:error_prone_core:2.0.21'
 }
 
 pmd {

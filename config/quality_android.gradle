@@ -1,25 +1,8 @@
-apply plugin: 'findbugs'
+apply plugin: 'net.ltgt.errorprone'
 apply plugin: 'pmd'
 
-task findbugs(type: FindBugs) {
-  ignoreFailures = false
-  effort = "max"
-  reportLevel = "high"
-  excludeFilter = new File("${findbugs_excludeFile}")
-  classes = files("$project.buildDir/intermediates/classes")
-
-  source "src"
-  include '**/*.java'
-  exclude '**/gen/**'
-
-  reports {
-    xml {
-      destination "$project.buildDir/reports/findbugs/findbugs.xml"
-      xml.withMessages true
-    }
-  }
-
-  classpath = files()
+dependencies {
+  errorprone 'com.google.errorprone:error_prone_core:2.0.21'
 }
 
 pmd {
@@ -40,4 +23,4 @@ task pmd(type: Pmd) {
   }
 }
 
-check.dependsOn 'findbugs', 'pmd'
+check.dependsOn 'pmd'

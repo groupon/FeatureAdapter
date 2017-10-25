@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
 apply from: rootProject.file("${quality_gradle_android_file}")
-apply plugin: 'com.github.hierynomus.license'
+apply plugin: 'android-maven-publish'
+apply plugin: 'groupon-nexus-publish'
 
 android {
   compileSdkVersion versions.compileSdk
@@ -21,16 +21,13 @@ android {
 }
 
 dependencies {
-  compile deps.findbugs
-  compile deps.javaxannotation
+  implementation deps.findbugs
+  compileOnly deps.javaxannotation
 
-  compile deps.support.compat
-  compile deps.support.design
-  compile deps.support.recyclerview
+  api deps.support.compat
+  api deps.support.design
+  api deps.support.recyclerview
 
-  testCompile deps.junit
-  testCompile deps.easymock
+  testImplementation deps.junit
+  testImplementation deps.easymock
 }
-
-apply plugin: 'android-maven-publish'
-apply plugin: 'groupon-nexus-publish'
