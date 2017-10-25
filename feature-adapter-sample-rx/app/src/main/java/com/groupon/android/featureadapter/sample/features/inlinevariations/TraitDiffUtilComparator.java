@@ -16,12 +16,20 @@
 package com.groupon.android.featureadapter.sample.features.inlinevariations;
 
 import com.groupon.android.featureadapter.sample.model.Trait;
-import com.groupon.featureadapter.DefaultDiffUtilComparator;
+import com.groupon.featureadapter.DiffUtilComparator;
 
-class TraitDiffUtilComparator extends DefaultDiffUtilComparator<Trait> {
-
+class TraitDiffUtilComparator implements DiffUtilComparator<Trait> {
   @Override
   public boolean areItemsTheSame(Trait oldModel, Trait newModel) {
     return oldModel.getIndex() == newModel.getIndex();
+  }
+
+  public boolean areContentsTheSame(Trait oldModel, Trait newModel) {
+    return oldModel.equals(newModel);
+  }
+
+  @Override
+  public Object getChangePayload(Trait oldModel, Trait newModel) {
+    return null;
   }
 }

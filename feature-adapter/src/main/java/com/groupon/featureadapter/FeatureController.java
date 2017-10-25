@@ -38,7 +38,7 @@ import java.util.List;
  *  }
  * </pre>
  *
- * To represent this input model class in feature-control, we could create as many different feature
+ * To represent this input model class in feature-adapter, we could create as many different feature
  * controllers as we want. Each of them could be in charge of representing one or more field, and/or
  * one or more computed values from this input model (like the price in various different
  * currencies, or the amount of taxes, etc..). We could have for instance a feature controller that
@@ -46,6 +46,13 @@ import java.util.List;
  * price and the currency together, using a new output model, a simple pojo with 2 strings or it
  * could represent the price and the currency as separate items and use different views to represent
  * them.
+ *
+ * <p>Note on optimizations: In some cases, some features which are very computation intensive might
+ * want to avoid building their feature items list as a whole, which will save a lot of computation
+ * (the creation of the list of feature items and their comparison). In this case, it is recommended
+ * that a {@code FeatureController} stores the information about the last computed state and
+ * compares it with the new state inside {@code {@link #buildItems(Object)}}. This comparison is
+ * really optional and we introduce it here as an optimization mechanism.
  *
  * @param <MODEL> the class of the input model that this controller will represent partially.
  */

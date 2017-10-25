@@ -20,9 +20,15 @@ package com.groupon.featureadapter;
  * position are the same (basically items are place holders), but can have changed between the new
  * list and the old list.
  *
+ * <p>It assumes that the {@code MODEL} class instances are not gonna be reused. They can be
+ * immutable or not, this is left to the developers. But the instances should change every time a
+ * feature's items are rebuilt.
+ *
+ * <p>A note on the API:
+ *
  * @param <MODEL>
  */
-public class DefaultDiffUtilComparator<MODEL> implements DiffUtilComparator<MODEL> {
+public final class DefaultDiffUtilComparator<MODEL> implements DiffUtilComparator<MODEL> {
 
   /**
    * @param oldModel the item in the old list.
@@ -37,11 +43,11 @@ public class DefaultDiffUtilComparator<MODEL> implements DiffUtilComparator<MODE
   /**
    * @param oldModel the item in the old list.
    * @param newModel the item in the new list.
-   * @return true if {@code oldModel.equals(newModel)} and false otherwise.
+   * @return true if {@code oldModel == newModel} and false otherwise.
    */
   @Override
   public boolean areContentsTheSame(MODEL oldModel, MODEL newModel) {
-    return oldModel.equals(newModel);
+    return oldModel == newModel;
   }
 
   /**

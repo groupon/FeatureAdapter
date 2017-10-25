@@ -15,10 +15,20 @@
  */
 package com.groupon.android.featureadapter.sample.features.header;
 
-import com.groupon.featureadapter.DefaultDiffUtilComparator;
+import com.groupon.featureadapter.DiffUtilComparator;
 import java.util.Objects;
 
-public class HeaderDiffUtilComparator extends DefaultDiffUtilComparator<HeaderModel> {
+public class HeaderDiffUtilComparator implements DiffUtilComparator<HeaderModel> {
+  @Override
+  public boolean areItemsTheSame(HeaderModel oldModel, HeaderModel newModel) {
+    return true;
+  }
+
+  @Override
+  public boolean areContentsTheSame(HeaderModel oldModel, HeaderModel newModel) {
+    return oldModel.equals(newModel);
+  }
+
   @Override
   public Object getChangePayload(HeaderModel oldModel, HeaderModel newModel) {
     if (!hasValueChanged(oldModel.imageUrl, newModel.imageUrl)
