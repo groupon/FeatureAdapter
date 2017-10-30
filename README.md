@@ -27,10 +27,14 @@ The main features of FeatureAdapter are:
 
 ## Credits 
 The following people have been active contributors to the first version of FeatureAdapter:
-* Shaheen Ghiassy
+* Alin Turcu
+* Keith Smyth
+* Matthijs Mullender
 * Michael Ma
-* Matthijs Mullender 
-* Turcu Alin
 * Samuel Guirado Navarro
-* Keith Smyth 
+* Shaheen Ghiassy
 * Stephane Nicolas
+
+
+
+
