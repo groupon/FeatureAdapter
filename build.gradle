@@ -32,7 +32,7 @@ buildscript {
   dependencies {
     classpath 'com.groupon.gradle:android-maven-publish:2.0.2'
     classpath 'com.groupon.gradle:nexus-publish:2.0.3'
-    classpath 'com.android.tools.build:gradle:3.0.0-rc1'
+    classpath 'com.android.tools.build:gradle:3.0.0'
     classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
     classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.0.11"
   }
