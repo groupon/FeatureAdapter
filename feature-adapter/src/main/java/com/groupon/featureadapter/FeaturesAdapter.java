@@ -158,17 +158,16 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
   /**
    * Returns the position of the first view item for a given view type
    *
-   * @param viewType view type of the feature views. The viewType is returned by {@link
-   *     AdapterViewTypeDelegate#getViewType}
-   * @return the first position of the view item defined by the given viewType
+   * @param adapterViewTypeDelegate of the feature views.
+   * @return the first position of the view item defined by the given adapterViewTypeDelegate
    */
   @SuppressWarnings("unused")
-  public int getFirstItemPositionForType(int viewType) {
+  public int getFirstItemPositionForAdapterViewTypeDelegate(AdapterViewTypeDelegate adapterViewTypeDelegate) {
     int indexViewItem = 0;
 
     for (Iterator iterator = this.featureItems.iterator(); iterator.hasNext(); ++indexViewItem) {
       ViewItem recyclerViewItem = (ViewItem) iterator.next();
-      if (recyclerViewItem.viewType == viewType) {
+      if (recyclerViewItem.viewType == adapterViewTypeDelegate.getViewType()) {
         return indexViewItem;
       }
     }

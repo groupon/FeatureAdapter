@@ -49,7 +49,7 @@ public abstract class AdapterViewTypeDelegate<HOLDER extends RecyclerView.ViewHo
     this.viewType = viewType;
   }
 
-  public int getViewType() {
+  int getViewType() {
     return viewType;
   }
 
