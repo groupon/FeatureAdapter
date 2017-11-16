@@ -40,6 +40,7 @@ import java.util.Map;
 public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
 
   private final FeatureItems<MODEL> featureItems;
+  private BindErrorHandler bindErrorHandler;
   private final Map<Integer, AdapterViewTypeDelegate> mapViewTypeToAdapterViewTypeDelegate =
       new HashMap<>();
   private final Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator = new HashMap<>();
@@ -69,10 +70,19 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
   @Override
   public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
     final ViewItem item = featureItems.get(position);
-    //noinspection unchecked
-    mapViewTypeToAdapterViewTypeDelegate
-        .get(item.viewType)
-        .bindViewHolder(holder, item.model, payloads);
+    AdapterViewTypeDelegate adapterViewTypeDelegate = mapViewTypeToAdapterViewTypeDelegate.get(item.viewType);
+
+    try {
+      //noinspection unchecked
+      adapterViewTypeDelegate.bindViewHolder(holder, item.model, payloads);
+
+    }catch (Exception exception){
+      if (bindErrorHandler != null){
+        bindErrorHandler.handleBindError(exception, position);
+      }else{
+        throw exception;
+      }
+    }
   }
 
   @Override
@@ -188,6 +198,14 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
             delegate.getViewType(), delegate.createDiffUtilComparator());
       }
     }
+  }
+
+  public BindErrorHandler getBindErrorHandler() {
+    return bindErrorHandler;
+  }
+
+  public void setBindErrorHandler(BindErrorHandler bindErrorHandler) {
+    this.bindErrorHandler = bindErrorHandler;
   }
 
   /**
