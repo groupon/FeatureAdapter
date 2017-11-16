@@ -40,7 +40,7 @@ import java.util.Map;
 public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
 
   private final FeatureItems<MODEL> featureItems;
-  private BindErrorHandler bindErrorHandler;
+  private FeaturesAdapterErrorHandler featuresAdapterErrorHandler;
   private final Map<Integer, AdapterViewTypeDelegate> mapViewTypeToAdapterViewTypeDelegate =
       new HashMap<>();
   private final Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator = new HashMap<>();
@@ -77,8 +77,8 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
       adapterViewTypeDelegate.bindViewHolder(holder, item.model, payloads);
 
     }catch (Exception exception){
-      if (bindErrorHandler != null){
-        bindErrorHandler.handleBindError(exception, position);
+      if (featuresAdapterErrorHandler != null){
+        featuresAdapterErrorHandler.onBindViewHolderError(exception, position);
       }else{
         throw exception;
       }
@@ -200,12 +200,12 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     }
   }
 
-  public BindErrorHandler getBindErrorHandler() {
-    return bindErrorHandler;
+  public FeaturesAdapterErrorHandler getFeaturesAdapterErrorHandler() {
+    return featuresAdapterErrorHandler;
   }
 
-  public void setBindErrorHandler(BindErrorHandler bindErrorHandler) {
-    this.bindErrorHandler = bindErrorHandler;
+  public void setFeaturesAdapterErrorHandler(FeaturesAdapterErrorHandler featuresAdapterErrorHandler) {
+    this.featuresAdapterErrorHandler = featuresAdapterErrorHandler;
   }
 
   /**

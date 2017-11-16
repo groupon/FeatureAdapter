@@ -17,10 +17,10 @@ package com.groupon.featureadapter;
 
 /**
  * Implement this interface and set it to the {@link FeaturesAdapter} to catch and handle any error that happens during the binding process
- * see {@link FeaturesAdapter#setBindErrorHandler(BindErrorHandler)}
+ * see {@link FeaturesAdapter#setFeaturesAdapterErrorHandler(FeaturesAdapterErrorHandler)}
  */
 @FunctionalInterface
-public interface BindErrorHandler {
+public interface FeaturesAdapterErrorHandler {
 
   /**
   * Implement this method to catch and handle any error that happens during the binding process
@@ -28,5 +28,5 @@ public interface BindErrorHandler {
   * @param throwable the error
   * @param position the position of the feature that caused the error
   */
-  void handleBindError(Throwable throwable, int position);
+  void onBindViewHolderError(Throwable throwable, int position);
 }

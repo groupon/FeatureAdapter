@@ -263,10 +263,10 @@ public class FeaturesAdapterTest {
                     new StubFeatureController<>(
                             asList(stubAdapterViewTypeDelegate), items));
     FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
-    BindErrorHandler bindErrorHandler = createMock(BindErrorHandler.class);
-    bindErrorHandler.handleBindError(anyObject(Throwable.class), eq(0));
-    featuresAdapter.setBindErrorHandler(bindErrorHandler);
-    replay(bindErrorHandler);
+    FeaturesAdapterErrorHandler featuresAdapterErrorHandler = createMock(FeaturesAdapterErrorHandler.class);
+    featuresAdapterErrorHandler.onBindViewHolderError(anyObject(Throwable.class), eq(0));
+    featuresAdapter.setFeaturesAdapterErrorHandler(featuresAdapterErrorHandler);
+    replay(featuresAdapterErrorHandler);
     fixAdapterForTesting(featuresAdapter);
 
     items.add(new ViewItem<>("a0", stubAdapterViewTypeDelegate));
@@ -277,7 +277,7 @@ public class FeaturesAdapterTest {
 
 
     //THEN
-    verify(bindErrorHandler, stubAdapterViewTypeDelegate);
+    verify(featuresAdapterErrorHandler, stubAdapterViewTypeDelegate);
   }
 
   @Test(expected = NullPointerException.class)
