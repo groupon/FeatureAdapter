@@ -15,6 +15,15 @@
  */
 package com.groupon.featureadapter;
 
+import android.content.Context;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static android.support.v7.widget.RecyclerView.INVALID_TYPE;
 import static android.support.v7.widget.RecyclerView.ViewHolder;
 import static com.groupon.featureadapter.TestUtils.fixAdapterForTesting;
@@ -25,18 +34,12 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-
-import android.content.Context;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.Test;
 
 public class FeaturesAdapterTest {
 
@@ -236,5 +239,79 @@ public class FeaturesAdapterTest {
 
     //THEN
     verify(stubAdapterViewTypeDelegate0, stubAdapterViewTypeDelegate1);
+  }
+
+  @Test
+  public void registerFeatures_should_callTheBindErrorDelegateWhenThisIsSetAndAnExceptionOccurs()
+          throws Exception {
+
+    //GIVEN
+    final LinearLayout parent = new LinearLayout(createMock(Context.class));
+    StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate =
+            createNiceMock(StubAdapterViewTypeDelegate.class);
+    expect(stubAdapterViewTypeDelegate.getViewType()).andReturn(0).anyTimes();
+
+    stubAdapterViewTypeDelegate.bindViewHolder(
+            anyObject(ViewHolder.class), eq("a0"), eq(singletonList("payload")));
+    expectLastCall().andThrow(new NullPointerException());
+
+    replay(stubAdapterViewTypeDelegate);
+
+    List<ViewItem> items = new ArrayList<>();
+    List<FeatureController<String>> featureControllers =
+            singletonList(
+                    new StubFeatureController<>(
+                            asList(stubAdapterViewTypeDelegate), items));
+    FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
+    FeaturesAdapterErrorHandler featuresAdapterErrorHandler = createMock(FeaturesAdapterErrorHandler.class);
+    featuresAdapterErrorHandler.onBindViewHolderError(anyObject(Throwable.class), eq(0));
+    featuresAdapter.setFeaturesAdapterErrorHandler(featuresAdapterErrorHandler);
+    replay(featuresAdapterErrorHandler);
+    fixAdapterForTesting(featuresAdapter);
+
+    items.add(new ViewItem<>("a0", stubAdapterViewTypeDelegate));
+    featuresAdapter.updateFeatureItems("a");
+
+    //WHEN
+    featuresAdapter.onBindViewHolder(new ViewHolder(parent) {}, 0, singletonList("payload"));
+
+
+    //THEN
+    verify(featuresAdapterErrorHandler, stubAdapterViewTypeDelegate);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void registerFeatures_should_throwExceptionWhenBindErrorDelegateIsNotSetAndAnExceptionOccurs()
+          throws Exception {
+
+    //GIVEN
+    final LinearLayout parent = new LinearLayout(createMock(Context.class));
+    StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate =
+            createNiceMock(StubAdapterViewTypeDelegate.class);
+    expect(stubAdapterViewTypeDelegate.getViewType()).andReturn(0).anyTimes();
+
+    stubAdapterViewTypeDelegate.bindViewHolder(
+            anyObject(ViewHolder.class), eq("a0"), eq(singletonList("payload")));
+    expectLastCall().andThrow(new NullPointerException());
+
+    replay(stubAdapterViewTypeDelegate);
+
+    List<ViewItem> items = new ArrayList<>();
+    List<FeatureController<String>> featureControllers =
+            singletonList(
+                    new StubFeatureController<>(
+                            asList(stubAdapterViewTypeDelegate), items));
+    FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
+    fixAdapterForTesting(featuresAdapter);
+
+    items.add(new ViewItem<>("a0", stubAdapterViewTypeDelegate));
+    featuresAdapter.updateFeatureItems("a");
+
+    //WHEN
+    featuresAdapter.onBindViewHolder(new ViewHolder(parent) {}, 0, singletonList("payload"));
+
+
+    //THEN
+    verify(stubAdapterViewTypeDelegate);
   }
 }
