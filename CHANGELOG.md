@@ -1,4 +1,9 @@
-### version 1.0.3 (TBR)
+### version 1.0.4 (TBR)
+
+### version 1.0.3 (Nov. 29th, 2017)
+
+* The adapter needs a method to return a view type delegate for a viewHolder object: issue #35
+* Create a way to add animators + item decorators for features: #34
 
 ### version 1.0.2 (Nov. 27th, 2017)
 
