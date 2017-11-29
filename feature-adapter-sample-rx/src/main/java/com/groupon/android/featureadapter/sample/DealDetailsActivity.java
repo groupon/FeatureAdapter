@@ -32,6 +32,9 @@ import com.groupon.android.featureadapter.sample.rx.R;
 import com.groupon.android.featureadapter.sample.state.DealDetailsScopeSingleton;
 import com.groupon.android.featureadapter.sample.state.SampleModel;
 import com.groupon.android.featureadapter.sample.state.SampleStore;
+import com.groupon.featureadapter.FeatureAdapterDefaultAnimator;
+import com.groupon.featureadapter.FeatureAdapterItemDecoration;
+import com.groupon.featureadapter.FeatureAnimatorController;
 import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.FeatureUpdate;
 import com.groupon.featureadapter.RxFeaturesAdapter;
@@ -68,6 +71,9 @@ public class DealDetailsActivity extends AppCompatActivity {
   @BindView(R.id.progress) ProgressBar progressBar;
 
   @Inject SampleStore store;
+  @Inject FeatureAnimatorController featureAnimatorController;
+  @Inject FeatureAdapterItemDecoration featureAdapterItemDecoration;
+  @Inject FeatureControllerListCreator featureControllerListCreator;
 
   private Scope scope;
 
@@ -76,18 +82,24 @@ public class DealDetailsActivity extends AppCompatActivity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     scope = openScopes(getApplication(), DealDetailsScopeSingleton.class, this);
-    scope.installModules(new SmoothieActivityModule(this), new SmoothieSupportActivityModule(this));
+    scope.installModules(
+      new SmoothieActivityModule(this),
+      new SmoothieSupportActivityModule(this),
+      new FeatureAnimatorModule(),
+      new FeatureItemDecorationModule());
     inject(this, scope);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_with_recycler);
     ButterKnife.bind(this);
 
-    List<FeatureController<SampleModel>> features = new FeatureControllerListCreator().getFeatureControllerList();
+    List<FeatureController<SampleModel>> features = featureControllerListCreator.getFeatureControllerList();
     RxFeaturesAdapter<SampleModel> adapter = new RxFeaturesAdapter<>(features);
 
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(new FlexboxLayoutManager(this));
     recyclerView.setAdapter(adapter);
+    recyclerView.setItemAnimator(new FeatureAdapterDefaultAnimator(featureAnimatorController));
+    recyclerView.addItemDecoration(featureAdapterItemDecoration);
 
     subscriptions.add(
       clicks(refreshButton).subscribe(v -> refreshDeal(), this::logError)

@@ -15,6 +15,7 @@
  */
 package com.groupon.android.featureadapter.sample.features;
 
+import com.groupon.android.featureadapter.sample.features.collapsible.CollapsibleController;
 import com.groupon.android.featureadapter.sample.features.header.HeaderController;
 import com.groupon.android.featureadapter.sample.features.options.OptionsController;
 import com.groupon.android.featureadapter.sample.state.SampleModel;
@@ -22,16 +23,21 @@ import com.groupon.featureadapter.FeatureController;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import static java.util.Arrays.asList;
 
 public class FeatureControllerListCreator {
 
   private final List<FeatureController<SampleModel>> featureControllers;
 
-  public FeatureControllerListCreator() {
+  @Inject
+  public FeatureControllerListCreator(OptionsController optionsController,
+                                      CollapsibleController collapsibleController) {
     featureControllers = asList(
       new HeaderController(),
-      new OptionsController()
+      optionsController,
+      collapsibleController
     );
   }
 
