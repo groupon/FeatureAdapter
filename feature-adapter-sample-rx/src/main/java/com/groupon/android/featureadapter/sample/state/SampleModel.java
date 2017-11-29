@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 
 import com.google.auto.value.AutoValue;
+import com.groupon.android.featureadapter.sample.features.collapsible.CollapsibleFeatureState;
 import com.groupon.android.featureadapter.sample.model.Deal;
 import com.groupon.android.featureadapter.sample.model.Option;
 
@@ -53,11 +54,14 @@ public abstract class SampleModel {
   @Nullable
   public abstract String exceptionText();
 
+  public abstract CollapsibleFeatureState collapsibleFeatureState();
+
   public abstract Builder toBuilder();
 
   public static Builder builder() {
     return new AutoValue_SampleModel.Builder()
-      .setState(STATE_READY);
+      .setState(STATE_READY)
+      .setCollapsibleFeatureState(CollapsibleFeatureState.DEFAULT);
   }
 
   @AutoValue.Builder
@@ -69,6 +73,8 @@ public abstract class SampleModel {
     public abstract Builder setState(@State String state);
 
     public abstract Builder setExceptionText(String exceptionText);
+
+    public abstract Builder setCollapsibleFeatureState(CollapsibleFeatureState collapsibleFeatureState);
 
     public abstract SampleModel build();
   }

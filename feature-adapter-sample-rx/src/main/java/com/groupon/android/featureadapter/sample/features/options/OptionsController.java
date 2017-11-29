@@ -15,10 +15,13 @@
  */
 package com.groupon.android.featureadapter.sample.features.options;
 
+import android.app.Activity;
+
 import com.groupon.android.featureadapter.sample.model.Deal;
 import com.groupon.android.featureadapter.sample.model.Option;
 import com.groupon.android.featureadapter.sample.state.SampleModel;
 import com.groupon.featureadapter.AdapterViewTypeDelegate;
+import com.groupon.featureadapter.FeatureAdapterItemDecoration;
 import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.ViewItem;
 
@@ -26,12 +29,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
 public class OptionsController extends FeatureController<SampleModel> {
 
   private final OptionsAdapterViewTypeDelegate optionsDelegate = new OptionsAdapterViewTypeDelegate();
+
+  @Inject Activity activity;
+  @Inject FeatureAdapterItemDecoration featureAdapterItemDecoration;
+
+  private OptionsItemDecoration decoration;
 
   @Override
   public Collection<AdapterViewTypeDelegate> getAdapterViewTypeDelegates() {
@@ -43,6 +53,11 @@ public class OptionsController extends FeatureController<SampleModel> {
     Deal deal = sampleModel.deal();
     if (deal == null) {
       return emptyList();
+    }
+
+    if (decoration == null) {
+      decoration = new OptionsItemDecoration(activity);
+      featureAdapterItemDecoration.registerFeatureDecoration(decoration, optionsDelegate);
     }
 
     List<ViewItem> items = new ArrayList<>(deal.options.size());
