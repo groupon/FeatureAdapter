@@ -56,6 +56,9 @@ public abstract class SampleModel {
 
   public abstract CollapsibleFeatureState collapsibleFeatureState();
 
+  @Nullable
+  public abstract String highlightedBadge();
+
   public abstract Builder toBuilder();
 
   public static Builder builder() {
@@ -75,6 +78,8 @@ public abstract class SampleModel {
     public abstract Builder setExceptionText(String exceptionText);
 
     public abstract Builder setCollapsibleFeatureState(CollapsibleFeatureState collapsibleFeatureState);
+
+    public abstract Builder setHighlightedBadge(@Nullable String highlightedBadge);
 
     public abstract SampleModel build();
   }

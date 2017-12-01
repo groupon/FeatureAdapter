@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.groupon.android.featureadapter.sample.model;
+package com.groupon.featureadapter;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.view.ViewGroup;
 
-public class Deal {
-  public String title;
-  public List<Option> options = new ArrayList<>();
-  public String imageUrl;
-  public List<String> badges = new ArrayList<>();
+class StubAdapterViewTypeDelegate extends AdapterViewTypeDelegate {
+  @Override
+  public ViewHolder createViewHolder(ViewGroup parent) {
+    return null;
+  }
+
+  @Override
+  public void bindViewHolder(ViewHolder holder, Object o) {}
+
+  @Override
+  public void unbindViewHolder(ViewHolder holder) {}
 }

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.groupon.android.featureadapter.sample.model;
+package com.groupon.android.featureadapter.sample.features.badges;
 
-import java.util.ArrayList;
-import java.util.List;
+class BadgeModel {
+  final String badgeText;
+  final boolean isHighlighted;
 
-public class Deal {
-  public String title;
-  public List<Option> options = new ArrayList<>();
-  public String imageUrl;
-  public List<String> badges = new ArrayList<>();
+  BadgeModel(String badgeText, boolean isHighlighted) {
+    this.badgeText = badgeText;
+    this.isHighlighted = isHighlighted;
+  }
 }

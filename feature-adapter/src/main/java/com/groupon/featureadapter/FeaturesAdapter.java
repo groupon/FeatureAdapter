@@ -17,7 +17,6 @@ package com.groupon.featureadapter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.util.DiffUtil.DiffResult;
 import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
@@ -210,68 +209,6 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
 
   public AdapterViewTypeDelegate getAdapterViewTypeDelegateForViewType(int viewType){
     return mapViewTypeToAdapterViewTypeDelegate.get(viewType);
-  }
-
-  /**
-   * Callback of DiffUtil to compare items. It uses the {@link FeatureController}s' {@link
-   * DiffUtilComparator} to do so.
-   */
-  private static class DiffUtilCallbackImpl extends DiffUtil.Callback {
-
-    private final Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator;
-    private final List<? extends ViewItem> oldList;
-    private final List<? extends ViewItem> newList;
-
-    DiffUtilCallbackImpl(
-        Map<Integer, DiffUtilComparator> mapViewTypeToItemComparator,
-        List<? extends ViewItem> oldList,
-        List<? extends ViewItem> newList) {
-      this.mapViewTypeToItemComparator = mapViewTypeToItemComparator;
-      this.oldList = oldList;
-      this.newList = newList;
-    }
-
-    @Override
-    public int getOldListSize() {
-      return oldList.size();
-    }
-
-    @Override
-    public int getNewListSize() {
-      return newList.size();
-    }
-
-    @Override
-    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-      final ViewItem oldItem = oldList.get(oldItemPosition);
-      final ViewItem newItem = newList.get(newItemPosition);
-      // noinspection unchecked
-      return oldItem.viewType == newItem.viewType
-          && mapViewTypeToItemComparator
-              .get(oldItem.viewType)
-              .areItemsTheSame(oldItem.model, newItem.model);
-    }
-
-    @Override
-    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-      final ViewItem oldItem = oldList.get(oldItemPosition);
-      final ViewItem newItem = newList.get(newItemPosition);
-      // noinspection unchecked
-      return mapViewTypeToItemComparator
-          .get(oldItem.viewType)
-          .areContentsTheSame(oldItem.model, newItem.model);
-    }
-
-    @Nullable
-    @Override
-    public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-      final ViewItem oldItem = oldList.get(oldItemPosition);
-      final ViewItem newItem = newList.get(newItemPosition);
-      // noinspection unchecked
-      return mapViewTypeToItemComparator
-          .get(oldItem.viewType)
-          .getChangePayload(oldItem.model, newItem.model);
-    }
   }
 
   /**

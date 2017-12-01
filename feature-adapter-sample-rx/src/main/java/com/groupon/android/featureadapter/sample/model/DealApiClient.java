@@ -15,6 +15,7 @@
  */
 package com.groupon.android.featureadapter.sample.model;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -60,6 +61,8 @@ public class DealApiClient {
     red.imageUrl = "https://img.grouponcdn.com/deal/cTCZaFHeNQkdrBtdRGnz/tD-2048x1229/v1//t300x300.png";
     red.price = "$333.33";
     deal.options.add(red);
+
+    deal.badges.addAll(Arrays.asList("Zero", "One", "Two", "Three", "Four", "Five", "Six"));
 
     return deal;
   }
