@@ -208,8 +208,8 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     this.featuresAdapterErrorHandler = featuresAdapterErrorHandler;
   }
 
-  public AdapterViewTypeDelegate getAdapterViewTypeDelegateForViewHolder(ViewHolder viewHolder){
-    return mapViewTypeToAdapterViewTypeDelegate.get(viewHolder.getItemViewType());
+  public AdapterViewTypeDelegate getAdapterViewTypeDelegateForViewType(int viewType){
+    return mapViewTypeToAdapterViewTypeDelegate.get(viewType);
   }
 
   /**
