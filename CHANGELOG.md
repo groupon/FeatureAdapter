@@ -1,4 +1,8 @@
-### version 1.0.4 (TBR)
+### version 1.0.5 (TBR)
+
+### version 1.0.4 (Dec. 6th, 2017)
+
+* Create a method in FeatureAdapter to get AdapterViewTypeDelegate for a certain ViewType: issue #39
 
 ### version 1.0.3 (Nov. 29th, 2017)
 
