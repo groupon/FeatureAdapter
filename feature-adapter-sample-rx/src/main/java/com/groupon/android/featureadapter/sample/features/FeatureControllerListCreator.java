@@ -15,6 +15,7 @@
  */
 package com.groupon.android.featureadapter.sample.features;
 
+import com.groupon.android.featureadapter.sample.features.badges.BadgeController;
 import com.groupon.android.featureadapter.sample.features.collapsible.CollapsibleController;
 import com.groupon.android.featureadapter.sample.features.header.HeaderController;
 import com.groupon.android.featureadapter.sample.features.options.OptionsController;
@@ -37,7 +38,8 @@ public class FeatureControllerListCreator {
     featureControllers = asList(
       new HeaderController(),
       optionsController,
-      collapsibleController
+      collapsibleController,
+      new BadgeController()
     );
   }
 
