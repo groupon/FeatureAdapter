@@ -1,4 +1,8 @@
-### version 1.0.5 (TBR)
+### version 1.0.6 (TBR)
+
+### version 1.0.5 (Dec. 7th 2017)
+
+* Added GroupAdapterViewTypeDelegate module: issue #41
 
 ### version 1.0.4 (Dec. 6th, 2017)
 
