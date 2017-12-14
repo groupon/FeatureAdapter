@@ -44,7 +44,7 @@ public class GroupAdapterViewTypeDelegateTest extends EasyMockSupport {
   public void constructor_shouldThrowException_whenSharingDelegates() {
     // GIVEN
     AdapterViewTypeDelegate delegate = createMock(AdapterViewTypeDelegate.class);
-    expect(delegate.getViewType()).andReturn(1);
+    expect(delegate.getViewType()).andReturn(0);
     replay(delegate);
 
     // WHEN

@@ -47,7 +47,8 @@ public abstract class GroupAdapterViewTypeDelegate<HOLDER extends RecyclerView.V
       if (delegate.getViewType() != RecyclerView.INVALID_TYPE) {
         throw new IllegalStateException("Do not reuse AdapterViewTypeDelegate instances");
       }
-      delegate.setViewType(childViewType++);
+      delegate.setViewType(childViewType);
+      childViewType++;
       delegate.addFeatureEventListener(this::fireEvent);
       childDiffUtilComparators.add(delegate.createDiffUtilComparator());
       childViewHolderCache.add(new ArrayDeque<>());
