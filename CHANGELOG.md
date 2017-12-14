@@ -1,4 +1,8 @@
-### version 1.0.6 (TBR)
+### version 1.0.7 (TBR)
+
+### version 1.0.6 (Dec. 14th 2017)
+
+* Fix view type init for group adapter: issues #43
 
 ### version 1.0.5 (Dec. 7th 2017)
 
