@@ -25,6 +25,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import rx.Observable;
+import rx.functions.Func2;
 import rx.subjects.BehaviorSubject;
 
 public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
@@ -50,9 +51,9 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
     // this is meant to be a very fine grained back pressure mechanism.
     BehaviorSubject<Object> tickObservable = BehaviorSubject.create();
     tickObservable.onNext(null);
-    return modelObservable
+    return tickObservable
         .observeOn(mainThread())
-        .zipWith(tickObservable, (model, tick) -> model)
+        .withLatestFrom(modelObservable.distinctUntilChanged(), (tick, model) -> model)
         .flatMap(
             model ->
                 from(getFeatureControllers())
@@ -99,6 +100,13 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
     public int compare(FeatureUpdate o1, FeatureUpdate o2) {
       return mapFeatureControllerToIndex.get(o1.featureController)
           - mapFeatureControllerToIndex.get(o2.featureController);
+    }
+  }
+
+  private class ActionReducer implements Func2<MODEL, MODEL, MODEL> {
+    @Override
+    public MODEL call(MODEL model0, MODEL model1) {
+      return model1;
     }
   }
 }
