@@ -15,6 +15,8 @@
  */
 package com.groupon.featureadapter;
 
+import static android.support.v7.util.DiffUtil.calculateDiff;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil.DiffResult;
@@ -22,13 +24,10 @@ import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.ViewGroup;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import static android.support.v7.util.DiffUtil.calculateDiff;
 
 /**
  * An adapter of a {@link RecyclerView} that is based on features. Each feature is described a
@@ -70,16 +69,17 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
   @Override
   public void onBindViewHolder(ViewHolder holder, int position, List<Object> payloads) {
     final ViewItem item = featureItems.get(position);
-    AdapterViewTypeDelegate adapterViewTypeDelegate = mapViewTypeToAdapterViewTypeDelegate.get(item.viewType);
+    AdapterViewTypeDelegate adapterViewTypeDelegate =
+        mapViewTypeToAdapterViewTypeDelegate.get(item.viewType);
 
     try {
       //noinspection unchecked
       adapterViewTypeDelegate.bindViewHolder(holder, item.model, payloads);
 
-    }catch (Exception exception){
-      if (featuresAdapterErrorHandler != null){
+    } catch (Exception exception) {
+      if (featuresAdapterErrorHandler != null) {
         featuresAdapterErrorHandler.onBindViewHolderError(exception, position);
-      }else{
+      } else {
         throw exception;
       }
     }
@@ -172,7 +172,8 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
    * @return the first position of the view item defined by the given adapterViewTypeDelegate
    */
   @SuppressWarnings("unused")
-  public int getFirstItemPositionForAdapterViewTypeDelegate(AdapterViewTypeDelegate adapterViewTypeDelegate) {
+  public int getFirstItemPositionForAdapterViewTypeDelegate(
+      AdapterViewTypeDelegate adapterViewTypeDelegate) {
     int indexViewItem = 0;
 
     for (Iterator iterator = this.featureItems.iterator(); iterator.hasNext(); ++indexViewItem) {
@@ -203,11 +204,12 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     return featuresAdapterErrorHandler;
   }
 
-  public void setFeaturesAdapterErrorHandler(FeaturesAdapterErrorHandler featuresAdapterErrorHandler) {
+  public void setFeaturesAdapterErrorHandler(
+      FeaturesAdapterErrorHandler featuresAdapterErrorHandler) {
     this.featuresAdapterErrorHandler = featuresAdapterErrorHandler;
   }
 
-  public AdapterViewTypeDelegate getAdapterViewTypeDelegateForViewType(int viewType){
+  public AdapterViewTypeDelegate getAdapterViewTypeDelegateForViewType(int viewType) {
     return mapViewTypeToAdapterViewTypeDelegate.get(viewType);
   }
 

@@ -15,6 +15,19 @@
  */
 package com.groupon.android.featureadapter.sample;
 
+import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_ERROR;
+import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_LOADING;
+import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_READY;
+import static com.groupon.featureadapter.events.RxFeatureEvent.featureEvents;
+import static com.groupon.grox.RxStores.states;
+import static com.jakewharton.rxbinding.view.RxView.clicks;
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
+import static rx.schedulers.Schedulers.computation;
+import static rx.schedulers.Schedulers.io;
+import static toothpick.Toothpick.closeScope;
+import static toothpick.Toothpick.inject;
+import static toothpick.Toothpick.openScopes;
+
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -24,7 +37,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.groupon.android.featureadapter.sample.events.RefreshDealCommand;
 import com.groupon.android.featureadapter.sample.features.FeatureControllerListCreator;
@@ -39,36 +53,23 @@ import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.FeatureUpdate;
 import com.groupon.featureadapter.RxFeaturesAdapter;
 import com.groupon.grox.commands.rxjava1.Command;
-
 import java.util.List;
-
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import rx.subscriptions.CompositeSubscription;
 import toothpick.Scope;
 import toothpick.smoothie.module.SmoothieActivityModule;
 import toothpick.smoothie.module.SmoothieSupportActivityModule;
 
-import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_ERROR;
-import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_LOADING;
-import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_READY;
-import static com.groupon.featureadapter.events.RxFeatureEvent.featureEvents;
-import static com.groupon.grox.RxStores.states;
-import static com.jakewharton.rxbinding.view.RxView.clicks;
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
-import static rx.schedulers.Schedulers.computation;
-import static rx.schedulers.Schedulers.io;
-import static toothpick.Toothpick.closeScope;
-import static toothpick.Toothpick.inject;
-import static toothpick.Toothpick.openScopes;
-
 public class DealDetailsActivity extends AppCompatActivity {
 
-  @BindView(R.id.recycler_view) RecyclerView recyclerView;
-  @BindView(R.id.button_refresh) Button refreshButton;
-  @BindView(R.id.progress) ProgressBar progressBar;
+  @BindView(R.id.recycler_view)
+  RecyclerView recyclerView;
+
+  @BindView(R.id.button_refresh)
+  Button refreshButton;
+
+  @BindView(R.id.progress)
+  ProgressBar progressBar;
 
   @Inject SampleStore store;
   @Inject FeatureAnimatorController featureAnimatorController;
@@ -83,16 +84,17 @@ public class DealDetailsActivity extends AppCompatActivity {
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     scope = openScopes(getApplication(), DealDetailsScopeSingleton.class, this);
     scope.installModules(
-      new SmoothieActivityModule(this),
-      new SmoothieSupportActivityModule(this),
-      new FeatureAnimatorModule(),
-      new FeatureItemDecorationModule());
+        new SmoothieActivityModule(this),
+        new SmoothieSupportActivityModule(this),
+        new FeatureAnimatorModule(),
+        new FeatureItemDecorationModule());
     inject(this, scope);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_with_recycler);
     ButterKnife.bind(this);
 
-    List<FeatureController<SampleModel>> features = featureControllerListCreator.getFeatureControllerList();
+    List<FeatureController<SampleModel>> features =
+        featureControllerListCreator.getFeatureControllerList();
     RxFeaturesAdapter<SampleModel> adapter = new RxFeaturesAdapter<>(features);
 
     recyclerView.setHasFixedSize(true);
@@ -101,35 +103,28 @@ public class DealDetailsActivity extends AppCompatActivity {
     recyclerView.setItemAnimator(new FeatureAdapterDefaultAnimator(featureAnimatorController));
     recyclerView.addItemDecoration(featureAdapterItemDecoration);
 
-    subscriptions.add(
-      clicks(refreshButton).subscribe(v -> refreshDeal(), this::logError)
-    );
+    subscriptions.add(clicks(refreshButton).subscribe(v -> refreshDeal(), this::logError));
 
     refreshButton.setOnClickListener(ignored -> refreshDeal());
 
     // listen for feature events
     subscriptions.add(
-      featureEvents(features)
-        .observeOn(computation())
-        .cast(Command.class)
-        .flatMap(Command::actions)
-        .subscribe(store::dispatch, this::logError)
-    );
+        featureEvents(features)
+            .observeOn(computation())
+            .cast(Command.class)
+            .flatMap(Command::actions)
+            .subscribe(store::dispatch, this::logError));
 
     // propagate states to features
     subscriptions.add(
-      states(store)
-        .subscribeOn(computation())
-        .compose(adapter::updateFeatureItems)
-        .subscribe(this::logFeatureUpdate, this::logError)
-    );
+        states(store)
+            .subscribeOn(computation())
+            .compose(adapter::updateFeatureItems)
+            .subscribe(this::logFeatureUpdate, this::logError));
 
     // listen for new states
     subscriptions.add(
-      states(store)
-        .observeOn(mainThread())
-        .subscribe(this::reactToNewState, this::logError)
-    );
+        states(store).observeOn(mainThread()).subscribe(this::reactToNewState, this::logError));
 
     if (store.getState().deal() == null) {
       refreshDeal();
@@ -148,11 +143,10 @@ public class DealDetailsActivity extends AppCompatActivity {
 
   private void refreshDeal() {
     subscriptions.add(
-      new RefreshDealCommand(scope)
-        .actions()
-        .subscribeOn(io())
-        .subscribe(store::dispatch, this::logError)
-    );
+        new RefreshDealCommand(scope)
+            .actions()
+            .subscribeOn(io())
+            .subscribe(store::dispatch, this::logError));
   }
 
   private void reactToNewState(SampleModel sampleModel) {
@@ -171,7 +165,7 @@ public class DealDetailsActivity extends AppCompatActivity {
     }
   }
 
-  private void logFeatureUpdate(FeatureUpdate featureUpdate) {
+  private void logFeatureUpdate(List<FeatureUpdate> featureUpdate) {
     Log.d(getClass().getSimpleName(), featureUpdate.toString());
   }
 

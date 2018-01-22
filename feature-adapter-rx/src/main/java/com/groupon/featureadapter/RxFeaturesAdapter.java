@@ -20,6 +20,7 @@ import static rx.Observable.just;
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
 import static rx.schedulers.Schedulers.computation;
 
+import android.support.v7.widget.RecyclerView;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -31,10 +32,23 @@ import rx.subjects.BehaviorSubject;
 public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
 
   private final FeatureUpdateComparator<MODEL> featureUpdateComparator;
+  private RecyclerView recyclerView;
 
   public RxFeaturesAdapter(List<FeatureController<MODEL>> featureControllers) {
     super(featureControllers);
     featureUpdateComparator = new FeatureUpdateComparator<>(getFeatureControllers());
+  }
+
+  @Override
+  public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+    super.onAttachedToRecyclerView(recyclerView);
+    this.recyclerView = recyclerView;
+  }
+
+  @Override
+  public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+    super.onDetachedFromRecyclerView(recyclerView);
+    this.recyclerView = null;
   }
 
   /**
@@ -44,7 +58,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
    * @param modelObservable the stream of models
    * @return an observable of {@link FeatureUpdate} for tracking the adapter changes.
    */
-  public Observable<FeatureUpdate> updateFeatureItems(Observable<MODEL> modelObservable) {
+  public Observable<List<FeatureUpdate>> updateFeatureItems(Observable<MODEL> modelObservable) {
     // the ticker observable is gonna emit an item every time all the
     // list of items from all the feature controllers have been computed
     // so we just process the model instances one at a time
@@ -77,11 +91,11 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                     .map(
                         list -> {
                           tickObservable.onNext(null);
+                          if (recyclerView != null) {
+                            recyclerView.setItemViewCacheSize(getItemCount());
+                          }
                           return list;
-                        })
-                    // convert the list of FeatureUpdate to an observable that emits the feature
-                    // updates
-                    .flatMap(Observable::from));
+                        }));
   }
 
   private static class FeatureUpdateComparator<T> implements Comparator<FeatureUpdate> {
