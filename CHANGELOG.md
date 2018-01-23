@@ -1,4 +1,8 @@
-### version 1.0.7 (TBR)
+### version 1.0.8 (TBD)
+
+### version 1.0.7 (23 Jan 2018)
+
+* fix multiple updates in the model
 
 ### version 1.0.6 (Dec. 14th 2017)
 
