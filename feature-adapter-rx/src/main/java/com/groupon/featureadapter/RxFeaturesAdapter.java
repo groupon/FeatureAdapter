@@ -65,9 +65,9 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
     // this is meant to be a very fine grained back pressure mechanism.
     BehaviorSubject<Object> tickObservable = BehaviorSubject.create();
     tickObservable.onNext(null);
-    return tickObservable
+    return modelObservable
         .observeOn(mainThread())
-        .withLatestFrom(modelObservable.distinctUntilChanged(), (tick, model) -> model)
+        .zipWith(tickObservable, (model, tick) -> model)
         .flatMap(
             model ->
                 from(getFeatureControllers())
