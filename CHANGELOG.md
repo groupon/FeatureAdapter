@@ -1,8 +1,13 @@
 ### version 1.0.8 (TBD)
 
+### version 1.0.9 (23 Jan 2018)
+
+* fix multiple updates in the model. It was creating too many updates indeed.
+
 ### version 1.0.7 (23 Jan 2018)
 
 * fix multiple updates in the model
+* update the view item cache size so that all views are in the cache and they ain't recycled.
 
 ### version 1.0.6 (Dec. 14th 2017)
 
