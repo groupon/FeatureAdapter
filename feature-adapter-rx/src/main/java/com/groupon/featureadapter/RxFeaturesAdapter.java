@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import rx.Observable;
 import rx.functions.Func2;
-import rx.subjects.BehaviorSubject;
 
 public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
 
@@ -59,15 +58,9 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
    * @return an observable of {@link FeatureUpdate} for tracking the adapter changes.
    */
   public Observable<List<FeatureUpdate>> updateFeatureItems(Observable<MODEL> modelObservable) {
-    // the ticker observable is gonna emit an item every time all the
-    // list of items from all the feature controllers have been computed
-    // so we just process the model instances one at a time
-    // this is meant to be a very fine grained back pressure mechanism.
-    BehaviorSubject<Object> tickObservable = BehaviorSubject.create();
-    tickObservable.onNext(null);
     return modelObservable
         .observeOn(mainThread())
-        .zipWith(tickObservable, (model, tick) -> model)
+        .onBackpressureLatest()
         .flatMap(
             model ->
                 from(getFeatureControllers())
@@ -90,7 +83,6 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                     .map(this::dispatchFeatureUpdates)
                     .map(
                         list -> {
-                          tickObservable.onNext(null);
                           if (recyclerView != null) {
                             recyclerView.setItemViewCacheSize(getItemCount());
                           }
