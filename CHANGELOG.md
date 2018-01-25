@@ -1,6 +1,10 @@
-### version 1.0.8 (TBD)
+### version 1.0.10 (TBD)
 
-### version 1.0.9 (23 Jan 2018)
+### version 1.0.9 (25 Jan 2018)
+
+* limit the number of updates in rx feature adapter. Take only the latest object in a window of time provided by the feature controllers processing time.
+
+### version 1.0.8 (23 Jan 2018)
 
 * fix multiple updates in the model. It was creating too many updates indeed.
 
