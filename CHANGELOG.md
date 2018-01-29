@@ -1,4 +1,8 @@
-### version 1.0.10 (TBD)
+### version 1.0.11 (TBD)
+
+### version 1.0.10 (29 Jan 2018)
+
+* fix an issue when the downstream is consuming the objects to fast and it doesn't wait for the result
 
 ### version 1.0.9 (25 Jan 2018)
 
