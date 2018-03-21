@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+apply from: rootProject.file("${quality_gradle_android_file}")
+apply plugin: 'android-maven-publish'
+apply plugin: 'groupon-nexus-publish'
+
+android {
+  compileSdkVersion versions.compileSdk
+  buildToolsVersion versions.buildTools
+  defaultConfig {
+    minSdkVersion versions.minSdk
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  testOptions {
+    unitTests.returnDefaultValues = true
+  }
+}
+
+dependencies {
+  implementation deps.findbugs
+  compileOnly deps.javaxannotation
+
+  api deps.support.compat
+  api deps.support.design
+  api deps.support.recyclerview
+
+  testImplementation deps.junit
+  testImplementation deps.easymock
+}

@@ -1,0 +1,34 @@
+apply plugin: 'net.ltgt.errorprone'
+apply plugin: 'pmd'
+apply plugin: 'com.diffplug.gradle.spotless'
+
+dependencies {
+  errorprone 'com.google.errorprone:error_prone_core:2.0.21'
+}
+
+pmd {
+  toolVersion = '5.5.0'
+  ruleSetFiles = files("${pmd_rulesetFile}")
+}
+
+task pmd(type: Pmd) {
+  ruleSets = [] //"java-basic", "java-braces", "java-strings"
+  ignoreFailures = false
+
+  source "src"
+  includes = ['**/*.java']
+  excludes = ['**/gen/**', 'src/test/**', '**/v2/db/**', '**/nst/**', '**/UpgradeManager*']
+  reports {
+    xml.enabled = true
+    html.enabled = true
+  }
+}
+
+check.dependsOn 'pmd'
+
+spotless {
+  java {
+    licenseHeaderFile rootProject.file('config/license/spotless.license.java.txt')
+    googleJavaFormat() // use a specific formatter for Java files
+  }
+}

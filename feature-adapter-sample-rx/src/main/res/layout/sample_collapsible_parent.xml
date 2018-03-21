@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/collapsible_title_text"
+        style="@style/TextAppearance.AppCompat.Subhead"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:padding="16dp"
+        tools:text="Collapsible Title"/>
+
+    <ImageView
+        android:id="@+id/collapsible_caret_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_caret_up_black_24dp"
+        tools:ignore="ContentDescription"/>
+
+</FrameLayout>
