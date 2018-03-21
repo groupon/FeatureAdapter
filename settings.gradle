@@ -1,0 +1,3 @@
+include ':feature-adapter', ':feature-adapter-group'
+include ':feature-adapter-rx'
+include ':feature-adapter-sample-rx'

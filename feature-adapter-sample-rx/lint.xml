@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--use 'lint - -list' to show all possible ids-->
+
+<lint>
+  <issue id="InvalidPackage" severity="warning"/>
+</lint>
