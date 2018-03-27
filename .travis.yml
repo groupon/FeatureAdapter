@@ -1,0 +1,43 @@
+language: android
+
+android:
+  components:
+    # https://github.com/travis-ci/travis-ci/issues/5036
+    - tools
+    - build-tools-26.0.2
+    - android-26
+    - extra-android-m2repository
+
+jdk:
+  - oraclejdk8
+
+#sonatype username and password
+env:
+  global:
+
+branches:
+  except:
+    - gh-pages
+
+notifications:
+  email: false
+
+sudo: false
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+  - $HOME/.android/build-cache
+
+script:
+  - ./gradlew clean check
+
+after_success:
+#  - ./gradlew jacocoTestReport coveralls
+#  - .buildscript/deploy_snapshot.sh
+

@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 apply from: rootProject.file("${quality_gradle_android_file}")
-apply plugin: 'android-maven-publish'
-apply plugin: 'groupon-nexus-publish'
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 
 android {
     compileSdkVersion versions.compileSdk
