@@ -2,6 +2,7 @@
 FeatureAdapter (FA) is an Android Library providing an optimized way to display complex screens on Android.
 
 [![Build Status](https://travis-ci.org/groupon/FeatureAdapter.svg?branch=master)](https://travis-ci.org/groupon/FeatureAdapter)
+[![codecov](https://codecov.io/gh/groupon/FeatureAdapter/branch/master/graph/badge.svg)](https://codecov.io/gh/groupon/FeatureAdapter)
 
 It offers a RecyclerView adapter that allows to define multiple “features”. Each “feature” contains multiple items rendered by multiple view types.
 
