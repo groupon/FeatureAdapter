@@ -12,9 +12,6 @@ jdk:
   - oraclejdk8
 
 #sonatype username and password
-env:
-  global:
-]
 branches:
   except:
     - gh-pages
@@ -35,9 +32,7 @@ cache:
   - $HOME/.android/build-cache
 
 script:
-  - ./gradlew clean check
+  - ./gradlew check jacocoTestDebugUnitTestReport
 
 after_success:
-#  - ./gradlew jacocoTestReport coveralls
-#  - .buildscript/deploy_snapshot.sh
-
+  - bash <(curl -s https://codecov.io/bash)
