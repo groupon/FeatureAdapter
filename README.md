@@ -51,6 +51,6 @@ implementation 'com.groupon.feature-adapter:feature-adapter-group:x.y.z'
 ```
 
 ## Alternatives to FA
-* Epoxy:[https://github.com/airbnb/epoxy](https://github.com/airbnb/epoxy)
+* [Epoxy](https://github.com/airbnb/epoxy)
 * SimpleAdapter
 
