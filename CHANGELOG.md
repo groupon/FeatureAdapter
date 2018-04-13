@@ -1,4 +1,6 @@
-### version 1.0.11 (TBD)
+### version 1.0.12 (TBD
+
+### version 1.0.11 (April 13th, 2018)
 
 * initial release
 * solves issue #10: make animator controller thread safe.
