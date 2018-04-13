@@ -1,5 +1,8 @@
 ### version 1.0.11 (TBD)
 
+* initial release
+* solves issue #10: make animator controller thread safe.
+
 ### version 1.0.10 (29 Jan 2018)
 
 * fix an issue when the downstream is consuming the objects to fast and it doesn't wait for the result

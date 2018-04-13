@@ -24,7 +24,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.ItemAnimator.ItemHolderInfo;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.SparseArray;
+import java.util.Hashtable;
 
 import java.util.Map;
 
@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class FeatureAnimatorController {
 
-  private final SparseArray<FeatureAnimatorListener> viewTypeFeatureAnimatorMap = new SparseArray<>();
+  private final Hashtable<Integer, FeatureAnimatorListener> viewTypeFeatureAnimatorMap = new Hashtable<>();
   private final Map<ViewHolder, Animator> viewHolderAnimatorMap = new ArrayMap<>();
 
   public void registerFeatureAnimatorListener(FeatureAnimatorListener featureAnimator, AdapterViewTypeDelegate viewTypeDelegate) {
@@ -46,14 +46,18 @@ public class FeatureAnimatorController {
 
   @Nullable
   public ItemHolderInfo recordPreLayoutInformation(@NonNull ViewHolder viewHolder) {
-    final FeatureAnimatorListener listener = viewTypeFeatureAnimatorMap.get(viewHolder.getItemViewType());
+    final FeatureAnimatorListener listener = getFeatureAnimatorListener(viewHolder);
     return listener != null ? listener.getPreLayoutInformation(viewHolder) : null;
   }
 
   @Nullable
   public ItemHolderInfo recordPostLayoutInformation(@NonNull ViewHolder viewHolder) {
-    final FeatureAnimatorListener listener = viewTypeFeatureAnimatorMap.get(viewHolder.getItemViewType());
+    final FeatureAnimatorListener listener = getFeatureAnimatorListener(viewHolder);
     return listener != null ? listener.getPostLayoutInformation(viewHolder) : null;
+  }
+
+  public FeatureAnimatorListener getFeatureAnimatorListener(@NonNull ViewHolder viewHolder) {
+    return viewTypeFeatureAnimatorMap.get(viewHolder.getItemViewType());
   }
 
   public boolean animateChange(@NonNull ItemAnimator itemAnimator, @NonNull ViewHolder oldHolder, @NonNull ViewHolder newHolder, @NonNull ItemHolderInfo preInfo, @NonNull ItemHolderInfo postInfo) {
