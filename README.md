@@ -43,11 +43,11 @@ FA supports custom animations and decorators for each feature.
 ## Setup
 ```
 // to use vanilla FeatureAdapter
-implementation 'com.groupon.feature-adapter:feature-adapter:x.y.z'
+implementation 'com.groupon.android.feature-adapter:feature-adapter:x.y.z'
 // to use FeatureAdapter with Rx
-implementation 'com.groupon.feature-adapter:feature-adapter-rx:x.y.z'
+implementation 'com.groupon.android.feature-adapter:feature-adapter-rx:x.y.z'
 // to group features on the same row
-implementation 'com.groupon.feature-adapter:feature-adapter-group:x.y.z'
+implementation 'com.groupon.android.feature-adapter:feature-adapter-group:x.y.z'
 ```
 
 ## Alternatives to FA
