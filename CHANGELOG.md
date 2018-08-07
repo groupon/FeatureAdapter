@@ -1,4 +1,10 @@
-### version 1.0.12 (TBD
+### version 1.0.13 (TBD)
+
+### version 1.0.12 (August 7th, 2018)
+
+* add a check in case a view item is associated to a non registered view type delegate:
+https://github.com/groupon/FeatureAdapter/issues/12
+
 
 ### version 1.0.11 (April 13th, 2018)
 
