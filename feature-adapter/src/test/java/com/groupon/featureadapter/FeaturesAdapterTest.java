@@ -16,6 +16,7 @@
 package com.groupon.featureadapter;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -28,6 +29,7 @@ import static android.support.v7.widget.RecyclerView.INVALID_TYPE;
 import static android.support.v7.widget.RecyclerView.ViewHolder;
 import static com.groupon.featureadapter.TestUtils.fixAdapterForTesting;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
@@ -310,6 +312,79 @@ public class FeaturesAdapterTest {
     //WHEN
     featuresAdapter.onBindViewHolder(new ViewHolder(parent) {}, 0, singletonList("payload"));
 
+
+    //THEN
+    verify(stubAdapterViewTypeDelegate);
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void registerFeatures_should_throwException_when_delegateIsNotRegistered() throws Exception {
+    //GIVEN
+    StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate =
+        createNiceMock(StubAdapterViewTypeDelegate.class);
+    expect(stubAdapterViewTypeDelegate.getViewType()).andReturn(RecyclerView.INVALID_TYPE).anyTimes();
+    replay(stubAdapterViewTypeDelegate);
+    List<ViewItem> items = new ArrayList<>();
+    items.add(new ViewItem<>("a0", stubAdapterViewTypeDelegate));
+
+    StubFeatureController<String> controller = new StubFeatureController<>(asList(stubAdapterViewTypeDelegate), items);
+    List<FeatureController<String>> featureControllers = singletonList(controller);
+
+    FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
+
+    //WHEN
+    featuresAdapter.validateNewViewItems(controller, items);
+
+    //THEN
+    // a RuntimeException should be thrown.
+  }
+
+  @Test
+  public void registerFeatures_should_notThrowException_when_listOfViewItemsIsNull() {
+    //GIVEN
+    StubFeatureController<String> controller = new StubFeatureController<>(emptyList(), null);
+    List<FeatureController<String>> featureControllers = singletonList(controller);
+
+    FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
+
+    //WHEN
+    featuresAdapter.validateNewViewItems(controller, null);
+
+    //THEN
+  }
+
+  @Test
+  public void registerFeatures_should_notThrowException_when_listOfViewItemsIsEmpty() {
+    //GIVEN
+    StubFeatureController<String> controller = new StubFeatureController<>(emptyList(), emptyList());
+    List<FeatureController<String>> featureControllers = singletonList(controller);
+
+    FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
+
+    //WHEN
+    featuresAdapter.validateNewViewItems(controller, emptyList());
+
+    //THEN
+  }
+
+  @Test
+  public void registerFeatures_should_notThrowException_when_delegateIsRegistered() {
+    //GIVEN
+    StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate =
+        createNiceMock(StubAdapterViewTypeDelegate.class);
+    expect(stubAdapterViewTypeDelegate.getViewType()).andReturn(0).anyTimes();
+    replay(stubAdapterViewTypeDelegate);
+    List<ViewItem> items = new ArrayList<>();
+    items.add(new ViewItem<>("a0", stubAdapterViewTypeDelegate));
+    items.add(new ViewItem<>("a1", stubAdapterViewTypeDelegate));
+
+    StubFeatureController<String> controller = new StubFeatureController<>(asList(stubAdapterViewTypeDelegate), items);
+    List<FeatureController<String>> featureControllers = singletonList(controller);
+
+    FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
+
+    //WHEN
+    featuresAdapter.validateNewViewItems(controller, items);
 
     //THEN
     verify(stubAdapterViewTypeDelegate);

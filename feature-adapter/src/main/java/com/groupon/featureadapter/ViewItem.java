@@ -15,8 +15,6 @@
  */
 package com.groupon.featureadapter;
 
-import android.support.v7.widget.RecyclerView;
-
 /**
  * Wraps the model & view type into a single object.
  *
@@ -38,8 +36,5 @@ public final class ViewItem<MODEL> {
   public ViewItem(MODEL model, AdapterViewTypeDelegate adapterViewTypeDelegate) {
     this.model = model;
     this.viewType = adapterViewTypeDelegate.getViewType();
-    if(viewType == RecyclerView.INVALID_TYPE) {
-      throw new RuntimeException("A ViewItem cannot be associated to a view type delegate that has not been registered: " + adapterViewTypeDelegate);
-    }
   }
 }
