@@ -19,6 +19,7 @@ import static android.support.v7.util.DiffUtil.calculateDiff;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.util.DiffUtil.DiffResult;
 import android.support.v7.util.ListUpdateCallback;
 import android.support.v7.widget.RecyclerView;
@@ -126,6 +127,22 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     }
   }
 
+  @VisibleForTesting void validateNewViewItems(FeatureController<MODEL> controller, List<ViewItem> viewItems) {
+    if (viewItems == null || viewItems.isEmpty()) {
+      // null - there is no change in the controller to update
+      // empty - this controller has no views
+      return;
+    }
+    for (ViewItem viewItem : viewItems) {
+      if(viewItem.viewType == RecyclerView.INVALID_TYPE) {
+        String template = "The Model %s of a ViewItem is associated to a "
+            + "ViewTypeDelegate that has not been "
+            + "registered in the controller %s";
+        throw new RuntimeException(String.format(template, viewItem.model, controller));
+      }
+    }
+  }
+
   /* Visible for Rx module. */
   @Nullable
   FeatureUpdate toFeatureUpdate(FeatureController<MODEL> featureController, MODEL model) {
@@ -134,6 +151,7 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
     if (newItems == null) {
       return null;
     }
+    validateNewViewItems(featureController, newItems);
     final DiffUtilCallbackImpl callback =
         new DiffUtilCallbackImpl(mapViewTypeToItemComparator, oldItems, newItems);
     final DiffResult diffResult = calculateDiff(callback, false);
