@@ -1,4 +1,7 @@
-### version 1.0.13 (TBD)
+### version 1.0.14 (TBD)
+
+### version 1.0.13 (August 16th, 2018)
+move the view item check for issue #12 into FeatureAdapter class
 
 ### version 1.0.12 (August 7th, 2018)
 
