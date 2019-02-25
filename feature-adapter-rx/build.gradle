@@ -3,15 +3,11 @@ buildscript {
     google()
     jcenter()
   }
-  dependencies {
-    classpath 'com.dicedmelon.gradle:jacoco-android:0.1.2'
-  }
 }
 
 apply plugin: 'com.android.library'
 apply from: rootProject.file("${quality_gradle_android_file}")
 apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
-apply plugin: 'jacoco-android'
 
 android {
   compileSdkVersion versions.compileSdk
@@ -45,14 +41,3 @@ dependencies {
   testImplementation deps.junit
   testImplementation deps.easymock
 }
-
-
-jacocoAndroidUnitTestReport {
-  excludes += ['**/AutoValue_*.*',
-               '**/*JavascriptBridge.class']
-
-  csv.enabled false
-  html.enabled true
-  xml.enabled true
-}
-
