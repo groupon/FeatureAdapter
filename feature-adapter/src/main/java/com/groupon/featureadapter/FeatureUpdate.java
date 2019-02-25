@@ -15,8 +15,8 @@
  */
 package com.groupon.featureadapter;
 
-import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil.DiffResult;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil.DiffResult;
 import java.util.List;
 
 public class FeatureUpdate {

@@ -5,7 +5,7 @@ buildscript {
   ext.versions = ['minSdk'        : 14,
                   'compileSdk'    : 28,
                   'buildTools'    : '28.0.3',
-                  'supportLibrary': '28.0.0',]
+                  'supportLibrary': '1.0.0-beta01',]
 
   ext.deps = [javaxannotation: 'javax.annotation:javax.annotation-api:1.2',
               findbugs       : 'com.google.code.findbugs:jsr305:3.0.2',
@@ -14,9 +14,9 @@ buildscript {
               rxjava         : 'io.reactivex:rxjava:1.2.7',
               rxbinding      : 'com.jakewharton.rxbinding:rxbinding:1.0.1',
 
-              'support'      : ['compat': "com.android.support:support-compat:${versions.supportLibrary}",
-                                'design': "com.android.support:design:${versions.supportLibrary}",
-                                'recyclerview': "com.android.support:recyclerview-v7:${versions.supportLibrary}"],
+              'support'      : ['compat': "androidx.core:core:${versions.supportLibrary}",
+                                'design': "com.google.android.material:material:${versions.supportLibrary}",
+                                'recyclerview': "androidx.recyclerview:recyclerview:${versions.supportLibrary}"],
               'spotless'     : 'com.diffplug.spotless:spotless-plugin-gradle:3.10.0',
               ]
 

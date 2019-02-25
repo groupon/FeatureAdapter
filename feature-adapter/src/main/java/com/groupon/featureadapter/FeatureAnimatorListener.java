@@ -16,7 +16,7 @@
 package com.groupon.featureadapter;
 
 import android.animation.Animator;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * A Feature's implementation of a custom animator that only runs for its own view type.

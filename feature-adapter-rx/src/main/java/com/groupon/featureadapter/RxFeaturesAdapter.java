@@ -20,7 +20,7 @@ import static rx.Observable.just;
 import static rx.android.schedulers.AndroidSchedulers.mainThread;
 import static rx.schedulers.Schedulers.computation;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
