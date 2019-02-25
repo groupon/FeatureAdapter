@@ -15,10 +15,10 @@
  */
 package com.groupon.featureadapter;
 
-import static android.support.v7.widget.RecyclerView.Adapter;
+import static androidx.recyclerview.widget.RecyclerView.Adapter;
 
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ViewGroup;
 import com.groupon.featureadapter.events.FeatureEvent;
 import com.groupon.featureadapter.events.FeatureEventListener;

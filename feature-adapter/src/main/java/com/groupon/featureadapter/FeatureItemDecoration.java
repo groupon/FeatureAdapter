@@ -17,11 +17,11 @@ package com.groupon.featureadapter;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Simple implementation of a {@link android.support.v7.widget.RecyclerView.ItemDecoration} for
+ * Simple implementation of a {@link RecyclerView.ItemDecoration} for
  * features to implement and register with {@link FeatureAdapterItemDecoration}
  */
 public interface FeatureItemDecoration {

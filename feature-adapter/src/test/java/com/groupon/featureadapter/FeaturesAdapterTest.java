@@ -16,7 +16,7 @@
 package com.groupon.featureadapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -25,8 +25,8 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.v7.widget.RecyclerView.INVALID_TYPE;
-import static android.support.v7.widget.RecyclerView.ViewHolder;
+import static androidx.recyclerview.widget.RecyclerView.INVALID_TYPE;
+import static androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import static com.groupon.featureadapter.TestUtils.fixAdapterForTesting;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;

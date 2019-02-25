@@ -15,15 +15,15 @@
  */
 package com.groupon.featureadapter;
 
-import static android.support.v7.util.DiffUtil.calculateDiff;
+import static androidx.recyclerview.widget.DiffUtil.calculateDiff;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v7.util.DiffUtil.DiffResult;
-import android.support.v7.util.ListUpdateCallback;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.DiffUtil.DiffResult;
+import androidx.recyclerview.widget.ListUpdateCallback;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import android.view.ViewGroup;
 import java.util.HashMap;
 import java.util.Iterator;

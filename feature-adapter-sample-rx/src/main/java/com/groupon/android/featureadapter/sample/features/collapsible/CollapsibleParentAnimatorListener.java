@@ -18,7 +18,7 @@ package com.groupon.android.featureadapter.sample.features.collapsible;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.widget.ImageView;
 
 import com.groupon.featureadapter.FeatureAnimatorListener;

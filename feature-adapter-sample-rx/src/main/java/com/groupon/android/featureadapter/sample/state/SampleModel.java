@@ -15,8 +15,8 @@
  */
 package com.groupon.android.featureadapter.sample.state;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 
 import com.google.auto.value.AutoValue;
 import com.groupon.android.featureadapter.sample.features.collapsible.CollapsibleFeatureState;

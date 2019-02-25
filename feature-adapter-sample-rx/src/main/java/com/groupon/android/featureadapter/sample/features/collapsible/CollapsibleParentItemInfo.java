@@ -15,7 +15,7 @@
  */
 package com.groupon.android.featureadapter.sample.features.collapsible;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 class CollapsibleParentItemInfo extends RecyclerView.ItemAnimator.ItemHolderInfo {
 
