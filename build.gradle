@@ -11,6 +11,7 @@ buildscript {
               junit          : 'junit:junit:4.12',
               easymock       : 'org.easymock:easymock:3.4',
               rxjava         : 'io.reactivex:rxjava:1.2.7',
+              rxandroid      : 'io.reactivex:rxandroid:1.2.1',
               rxbinding      : 'com.jakewharton.rxbinding:rxbinding:1.0.1',
 
               'support'      : ['compat': "androidx.core:core:1.0.1",
