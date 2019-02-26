@@ -15,14 +15,13 @@
  */
 package com.groupon.featureadapter.events;
 
-import static rx.android.MainThreadSubscription.verifyMainThread;
-
 import com.groupon.featureadapter.FeatureController;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.MainThreadSubscription;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
 
-final class FeatureControllerOnSubscribe implements Observable.OnSubscribe<FeatureEvent> {
+import static io.reactivex.android.MainThreadDisposable.verifyMainThread;
+
+final class FeatureControllerOnSubscribe implements FlowableOnSubscribe<FeatureEvent> {
   final FeatureController featureController;
 
   FeatureControllerOnSubscribe(FeatureController featureController) {
@@ -30,26 +29,17 @@ final class FeatureControllerOnSubscribe implements Observable.OnSubscribe<Featu
   }
 
   @Override
-  public void call(final Subscriber<? super FeatureEvent> subscriber) {
+  public void subscribe(final FlowableEmitter<FeatureEvent> subscriber) {
     verifyMainThread();
 
     FeatureEventListener listener =
-        new FeatureEventListener() {
-          @Override
-          public void onFeatureEvent(FeatureEvent event) {
-            if (!subscriber.isUnsubscribed()) {
-              subscriber.onNext(event);
-            }
+        event -> {
+          if (!subscriber.isCancelled()) {
+            subscriber.onNext(event);
           }
         };
 
-    subscriber.add(
-        new MainThreadSubscription() {
-          @Override
-          protected void onUnsubscribe() {
-            featureController.removeFeatureEventListener(listener);
-          }
-        });
+    subscriber.setCancellable(() -> featureController.removeFeatureEventListener(listener));
 
     featureController.addFeatureEventListener(listener);
   }
