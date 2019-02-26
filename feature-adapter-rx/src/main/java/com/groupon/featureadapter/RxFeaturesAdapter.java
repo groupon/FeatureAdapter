@@ -15,19 +15,19 @@
  */
 package com.groupon.featureadapter;
 
-import static rx.Observable.from;
-import static rx.Observable.just;
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
-import static rx.schedulers.Schedulers.computation;
-
 import androidx.recyclerview.widget.RecyclerView;
+import io.reactivex.Flowable;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.processors.BehaviorProcessor;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import rx.Observable;
-import rx.functions.Func2;
-import rx.subjects.BehaviorSubject;
+
+import static io.reactivex.Flowable.fromIterable;
+import static io.reactivex.Flowable.just;
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
+import static io.reactivex.schedulers.Schedulers.computation;
 
 public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
 
@@ -58,12 +58,12 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
    * @param modelObservable the stream of models
    * @return an observable of {@link FeatureUpdate} for tracking the adapter changes.
    */
-  public Observable<List<FeatureUpdate>> updateFeatureItems(Observable<MODEL> modelObservable) {
+  public Flowable<List<FeatureUpdate>> updateFeatureItems(Flowable<MODEL> modelObservable) {
     // the ticker observable is gonna emit an item every time all the
     // list of items from all the feature controllers have been computed
     // so we just process the model instances one at a time
     // this is meant to be a very fine grained back pressure mechanism.
-    BehaviorSubject<Object> tickObservable = BehaviorSubject.create();
+    BehaviorProcessor<Object> tickObservable = BehaviorProcessor.create();
     tickObservable.onNext(null);
     return modelObservable
         .observeOn(mainThread())
@@ -71,7 +71,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
         .onBackpressureLatest()
         .flatMap(
             model ->
-                from(getFeatureControllers())
+                fromIterable(getFeatureControllers())
                     .flatMap(
                         // each feature controller receives a fork of the model observable
                         // and compute its items in parallel, and then updates the UI ASAP
@@ -82,7 +82,8 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                             just(feature)
                                 .observeOn(computation())
                                 .map(featureController -> toFeatureUpdate(featureController, model))
-                                .filter(featureUpdate -> featureUpdate != null))
+                                //.filter(featureUpdate -> featureUpdate != null)
+                    )
                     // collect all observable of feature updates in a list in feature order
                     .toSortedList(featureUpdateComparator::compare)
                     .observeOn(mainThread())
@@ -96,7 +97,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                             recyclerView.setItemViewCacheSize(getItemCount());
                           }
                           return list;
-                        }));
+                        }).toFlowable());
   }
 
   private static class FeatureUpdateComparator<T> implements Comparator<FeatureUpdate> {
@@ -118,9 +119,9 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
     }
   }
 
-  private class ActionReducer implements Func2<MODEL, MODEL, MODEL> {
+  private class ActionReducer implements BiFunction<MODEL, MODEL, MODEL> {
     @Override
-    public MODEL call(MODEL model0, MODEL model1) {
+    public MODEL apply(MODEL model0, MODEL model1) {
       return model1;
     }
   }
