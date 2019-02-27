@@ -63,11 +63,12 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
     // list of items from all the feature controllers have been computed
     // so we just process the model instances one at a time
     // this is meant to be a very fine grained back pressure mechanism.
-    BehaviorSubject<Object> tickObservable = BehaviorSubject.create();
-    tickObservable.onNext(new Object());
+    final Object tick = new Object();
+    final BehaviorSubject<Object> tickObservable = BehaviorSubject.create();
+    tickObservable.onNext(tick);
     return modelObservable
         .observeOn(mainThread())
-        .zipWith(tickObservable, (model, tick) -> model)
+        .zipWith(tickObservable, (model, t) -> model)
         .toFlowable(BackpressureStrategy.LATEST)
         .flatMap(
             model ->
@@ -92,7 +93,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                     .map(this::dispatchFeatureUpdates)
                     .map(
                         list -> {
-                          tickObservable.onNext(new Object());
+                          tickObservable.onNext(tick);
                           if (recyclerView != null) {
                             recyclerView.setItemViewCacheSize(getItemCount());
                           }
