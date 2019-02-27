@@ -48,12 +48,12 @@ public class RefreshDealCommand implements Command, FeatureEvent {
 
   @Override
   public Observable<? extends Action> actions() {
-      return dealApiClient.getDeal()
-        .map(SuccessAction::new)
-        .cast(Action.class)
-        .onErrorReturn(FailedAction::new)
-        .toObservable()
-        .startWith(new StateLoadingAction());
+    return dealApiClient.getDeal()
+      .map(SuccessAction::new)
+      .cast(Action.class)
+      .onErrorReturn(FailedAction::new)
+      .toObservable()
+      .startWith(new StateLoadingAction());
   }
 
   /**

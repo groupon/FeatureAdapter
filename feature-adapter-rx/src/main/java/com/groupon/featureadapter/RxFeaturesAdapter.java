@@ -16,9 +16,9 @@
 package com.groupon.featureadapter;
 
 import androidx.recyclerview.widget.RecyclerView;
-import io.reactivex.Flowable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.processors.BehaviorProcessor;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Observable;
+import io.reactivex.subjects.BehaviorSubject;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -58,17 +58,17 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
    * @param modelObservable the stream of models
    * @return an observable of {@link FeatureUpdate} for tracking the adapter changes.
    */
-  public Flowable<List<FeatureUpdate>> updateFeatureItems(Flowable<MODEL> modelObservable) {
+  public Observable<List<FeatureUpdate>> updateFeatureItems(Observable<MODEL> modelObservable) {
     // the ticker observable is gonna emit an item every time all the
     // list of items from all the feature controllers have been computed
     // so we just process the model instances one at a time
     // this is meant to be a very fine grained back pressure mechanism.
-    BehaviorProcessor<Object> tickObservable = BehaviorProcessor.create();
+    BehaviorSubject<Object> tickObservable = BehaviorSubject.create();
     tickObservable.onNext(new Object());
     return modelObservable
         .observeOn(mainThread())
         .zipWith(tickObservable, (model, tick) -> model)
-        .onBackpressureLatest()
+        .toFlowable(BackpressureStrategy.LATEST)
         .flatMap(
             model ->
                 fromIterable(getFeatureControllers())
@@ -82,7 +82,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                             just(feature)
                                 .observeOn(computation())
                                 .map(featureController -> toFeatureUpdate(featureController, model))
-                                //.filter(featureUpdate -> featureUpdate != null)
+                                .filter(featureUpdate -> featureUpdate != null)
                     )
                     // collect all observable of feature updates in a list in feature order
                     .toSortedList(featureUpdateComparator::compare)
@@ -97,7 +97,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                             recyclerView.setItemViewCacheSize(getItemCount());
                           }
                           return list;
-                        }).toFlowable());
+                        }).toFlowable()).toObservable();
   }
 
   private static class FeatureUpdateComparator<T> implements Comparator<FeatureUpdate> {
@@ -116,13 +116,6 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
     public int compare(FeatureUpdate o1, FeatureUpdate o2) {
       return mapFeatureControllerToIndex.get(o1.featureController)
           - mapFeatureControllerToIndex.get(o2.featureController);
-    }
-  }
-
-  private class ActionReducer implements BiFunction<MODEL, MODEL, MODEL> {
-    @Override
-    public MODEL apply(MODEL model0, MODEL model1) {
-      return model1;
     }
   }
 }

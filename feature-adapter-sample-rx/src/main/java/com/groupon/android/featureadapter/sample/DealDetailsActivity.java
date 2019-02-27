@@ -118,7 +118,7 @@ public class DealDetailsActivity extends AppCompatActivity {
         featureEvents(features)
             .observeOn(computation())
             .cast(Command.class)
-            .flatMap(command -> command.actions().toFlowable(BackpressureStrategy.LATEST))
+            .flatMap(command -> command.actions())
             .subscribe(o -> store.dispatch((Action) o)
                 , new Consumer<Throwable>() {
                   @Override
@@ -130,7 +130,6 @@ public class DealDetailsActivity extends AppCompatActivity {
     // propagate states to features
     compositeDisposable.add(
         states(store)
-            .toFlowable(BackpressureStrategy.LATEST)
             .subscribeOn(computation())
             .compose(adapter::updateFeatureItems)
             .subscribe(this::logFeatureUpdate, this::logError));

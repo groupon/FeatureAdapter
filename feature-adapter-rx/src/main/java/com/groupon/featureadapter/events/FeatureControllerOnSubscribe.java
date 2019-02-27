@@ -16,12 +16,12 @@
 package com.groupon.featureadapter.events;
 
 import com.groupon.featureadapter.FeatureController;
-import io.reactivex.FlowableEmitter;
-import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 
 import static io.reactivex.android.MainThreadDisposable.verifyMainThread;
 
-final class FeatureControllerOnSubscribe implements FlowableOnSubscribe<FeatureEvent> {
+final class FeatureControllerOnSubscribe implements ObservableOnSubscribe<FeatureEvent> {
   final FeatureController featureController;
 
   FeatureControllerOnSubscribe(FeatureController featureController) {
@@ -29,12 +29,12 @@ final class FeatureControllerOnSubscribe implements FlowableOnSubscribe<FeatureE
   }
 
   @Override
-  public void subscribe(final FlowableEmitter<FeatureEvent> subscriber) {
+  public void subscribe(final ObservableEmitter<FeatureEvent> subscriber) {
     verifyMainThread();
 
     FeatureEventListener listener =
         event -> {
-          if (!subscriber.isCancelled()) {
+          if (!subscriber.isDisposed()) {
             subscriber.onNext(event);
           }
         };
