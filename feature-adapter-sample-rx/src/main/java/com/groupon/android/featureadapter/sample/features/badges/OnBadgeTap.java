@@ -15,12 +15,12 @@
  */
 package com.groupon.android.featureadapter.sample.features.badges;
 
-import com.groupon.android.featureadapter.sample.events.SingleActionBaseCommand;
 import com.groupon.android.featureadapter.sample.state.SampleModel;
 import com.groupon.featureadapter.events.FeatureEvent;
+import com.groupon.grox.commands.rxjava2.Command;
 import com.groupon.grox.commands.rxjava2.SingleActionCommand;
 
-class OnBadgeTap extends SingleActionBaseCommand {
+class OnBadgeTap extends SingleActionCommand<SampleModel> implements FeatureEvent {
 
   private final String badge;
 

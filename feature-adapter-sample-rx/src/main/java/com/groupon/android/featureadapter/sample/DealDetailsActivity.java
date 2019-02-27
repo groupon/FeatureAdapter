@@ -40,7 +40,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
-import com.groupon.android.featureadapter.sample.events.BaseCommand;
 import com.groupon.android.featureadapter.sample.events.RefreshDealCommand;
 import com.groupon.android.featureadapter.sample.features.FeatureControllerListCreator;
 import com.groupon.android.featureadapter.sample.rx.R;
@@ -112,7 +111,12 @@ public class DealDetailsActivity extends AppCompatActivity {
     compositeDisposable.add(
         featureEvents(features)
             .observeOn(computation())
-            .cast(BaseCommand.class)
+            // Grox and Feature Adapter are different libraries
+            // to combine the 2, we need a mechanism that, given a feature event,
+            // we trigger a command. In our sample, and we recommend it as a good practice,
+            // our Grox commands implement the FeatureEvent interface.
+            // This is why, the cast below is required
+            .map(event -> (Command<SampleModel>) event)
             .flatMap(Command::actions)
             .subscribe(store::dispatch, this::logError));
 
