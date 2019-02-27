@@ -21,11 +21,11 @@ import com.groupon.android.featureadapter.sample.model.Option;
 import com.groupon.android.featureadapter.sample.state.SampleModel;
 import com.groupon.featureadapter.events.FeatureEvent;
 import com.groupon.grox.Action;
-import com.groupon.grox.commands.rxjava1.Command;
 
+import com.groupon.grox.commands.rxjava2.Command;
+import io.reactivex.Observable;
 import javax.inject.Inject;
 
-import rx.Observable;
 import toothpick.Scope;
 
 import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_ERROR;
@@ -48,12 +48,12 @@ public class RefreshDealCommand implements Command, FeatureEvent {
 
   @Override
   public Observable<? extends Action> actions() {
-    return dealApiClient.getDeal()
-      .map(SuccessAction::new)
-      .cast(Action.class)
-      .onErrorReturn(FailedAction::new)
-      .toObservable()
-      .startWith(new StateLoadingAction());
+      return dealApiClient.getDeal()
+        .map(SuccessAction::new)
+        .cast(Action.class)
+        .onErrorReturn(FailedAction::new)
+        .toObservable()
+        .startWith(new StateLoadingAction());
   }
 
   /**

@@ -64,7 +64,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
     // so we just process the model instances one at a time
     // this is meant to be a very fine grained back pressure mechanism.
     BehaviorProcessor<Object> tickObservable = BehaviorProcessor.create();
-    tickObservable.onNext(null);
+    tickObservable.onNext(new Object());
     return modelObservable
         .observeOn(mainThread())
         .zipWith(tickObservable, (model, tick) -> model)
@@ -92,7 +92,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                     .map(this::dispatchFeatureUpdates)
                     .map(
                         list -> {
-                          tickObservable.onNext(null);
+                          tickObservable.onNext(new Object());
                           if (recyclerView != null) {
                             recyclerView.setItemViewCacheSize(getItemCount());
                           }

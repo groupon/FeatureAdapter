@@ -16,10 +16,11 @@
 package com.groupon.android.featureadapter.sample.model;
 
 import com.groupon.android.featureadapter.sample.rx.R;
+import io.reactivex.Flowable;
+import io.reactivex.internal.operators.flowable.FlowableSingle;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import rx.Single;
 
 /**
  * Mimics an Api request to fetch a {@link Deal} from the network.
@@ -29,8 +30,8 @@ public class DealApiClient {
   @Inject
   public DealApiClient() {}
 
-  public Single<Deal> getDeal() {
-    return Single
+  public Flowable<Deal> getDeal() {
+    return Flowable
       .fromCallable(this::createDeal)
       .delay(1, TimeUnit.SECONDS);
   }

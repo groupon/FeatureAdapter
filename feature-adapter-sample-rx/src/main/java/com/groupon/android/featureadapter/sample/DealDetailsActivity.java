@@ -19,11 +19,11 @@ import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_
 import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_LOADING;
 import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_READY;
 import static com.groupon.featureadapter.events.RxFeatureEvent.featureEvents;
-import static com.groupon.grox.RxStores.states;
-import static com.jakewharton.rxbinding.view.RxView.clicks;
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
-import static rx.schedulers.Schedulers.computation;
-import static rx.schedulers.Schedulers.io;
+import static com.groupon.grox.rxjava2.RxStores.states;
+import static com.jakewharton.rxbinding3.view.RxView.clicks;
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
+import static io.reactivex.schedulers.Schedulers.computation;
+import static io.reactivex.schedulers.Schedulers.io;
 import static toothpick.Toothpick.closeScope;
 import static toothpick.Toothpick.inject;
 import static toothpick.Toothpick.openScopes;
@@ -52,10 +52,16 @@ import com.groupon.featureadapter.FeatureAnimatorController;
 import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.FeatureUpdate;
 import com.groupon.featureadapter.RxFeaturesAdapter;
-import com.groupon.grox.commands.rxjava1.Command;
+import com.groupon.grox.Action;
+import com.groupon.grox.commands.rxjava2.Command;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import java.util.List;
 import javax.inject.Inject;
-import rx.subscriptions.CompositeSubscription;
+import org.reactivestreams.Publisher;
 import toothpick.Scope;
 import toothpick.smoothie.module.SmoothieActivityModule;
 import toothpick.smoothie.module.SmoothieSupportActivityModule;
@@ -78,7 +84,7 @@ public class DealDetailsActivity extends AppCompatActivity {
 
   private Scope scope;
 
-  private final CompositeSubscription subscriptions = new CompositeSubscription();
+  private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,27 +109,34 @@ public class DealDetailsActivity extends AppCompatActivity {
     recyclerView.setItemAnimator(new FeatureAdapterDefaultAnimator(featureAnimatorController));
     recyclerView.addItemDecoration(featureAdapterItemDecoration);
 
-    subscriptions.add(clicks(refreshButton).subscribe(v -> refreshDeal(), this::logError));
+    compositeDisposable.add(clicks(refreshButton).subscribe(v -> refreshDeal(), this::logError));
 
     refreshButton.setOnClickListener(ignored -> refreshDeal());
 
     // listen for feature events
-    subscriptions.add(
+    compositeDisposable.add(
         featureEvents(features)
             .observeOn(computation())
             .cast(Command.class)
-            .flatMap(Command::actions)
-            .subscribe(store::dispatch, this::logError));
+            .flatMap(command -> command.actions().toFlowable(BackpressureStrategy.LATEST))
+            .subscribe(o -> store.dispatch((Action) o)
+                , new Consumer<Throwable>() {
+                  @Override
+                  public void accept(Throwable throwable) throws Exception {
+                    DealDetailsActivity.this.logError(throwable);
+                  }
+                }));
 
     // propagate states to features
-    subscriptions.add(
+    compositeDisposable.add(
         states(store)
+            .toFlowable(BackpressureStrategy.LATEST)
             .subscribeOn(computation())
             .compose(adapter::updateFeatureItems)
             .subscribe(this::logFeatureUpdate, this::logError));
 
     // listen for new states
-    subscriptions.add(
+    compositeDisposable.add(
         states(store).observeOn(mainThread()).subscribe(this::reactToNewState, this::logError));
 
     if (store.getState().deal() == null) {
@@ -133,7 +146,7 @@ public class DealDetailsActivity extends AppCompatActivity {
 
   @Override
   protected void onDestroy() {
-    subscriptions.unsubscribe();
+    compositeDisposable.dispose();
     super.onDestroy();
     if (isFinishing()) {
       closeScope(DealDetailsScopeSingleton.class);
@@ -142,7 +155,7 @@ public class DealDetailsActivity extends AppCompatActivity {
   }
 
   private void refreshDeal() {
-    subscriptions.add(
+    compositeDisposable.add(
         new RefreshDealCommand(scope)
             .actions()
             .subscribeOn(io())
