@@ -38,7 +38,7 @@ import static toothpick.Toothpick.inject;
  * This class implements {@link FeatureEvent} so that it can be launched from features.
  * It also implements {@link Command} so that it can be processed in a Grox chain.
  */
-public class RefreshDealCommand implements Command, FeatureEvent {
+public class RefreshDealCommand implements BaseCommand {
 
   @Inject DealApiClient dealApiClient;
 

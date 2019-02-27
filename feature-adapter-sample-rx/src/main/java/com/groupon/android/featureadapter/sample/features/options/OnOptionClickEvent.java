@@ -15,13 +15,14 @@
  */
 package com.groupon.android.featureadapter.sample.features.options;
 
+import com.groupon.android.featureadapter.sample.events.SingleActionBaseCommand;
 import com.groupon.android.featureadapter.sample.model.Deal;
 import com.groupon.android.featureadapter.sample.model.Option;
 import com.groupon.android.featureadapter.sample.state.SampleModel;
 import com.groupon.featureadapter.events.FeatureEvent;
 import com.groupon.grox.commands.rxjava2.SingleActionCommand;
 
-class OnOptionClickEvent extends SingleActionCommand<SampleModel> implements FeatureEvent {
+class OnOptionClickEvent extends SingleActionBaseCommand {
 
   private final String uuid;
 

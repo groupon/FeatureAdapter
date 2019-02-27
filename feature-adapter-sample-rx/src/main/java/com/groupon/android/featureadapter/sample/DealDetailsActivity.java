@@ -40,6 +40,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
+import com.groupon.android.featureadapter.sample.events.BaseCommand;
 import com.groupon.android.featureadapter.sample.events.RefreshDealCommand;
 import com.groupon.android.featureadapter.sample.features.FeatureControllerListCreator;
 import com.groupon.android.featureadapter.sample.rx.R;
@@ -52,11 +53,8 @@ import com.groupon.featureadapter.FeatureAnimatorController;
 import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.FeatureUpdate;
 import com.groupon.featureadapter.RxFeaturesAdapter;
-import com.groupon.grox.Action;
 import com.groupon.grox.commands.rxjava2.Command;
-import io.reactivex.ObservableSource;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Function;
 import java.util.List;
 import javax.inject.Inject;
 import toothpick.Scope;
@@ -114,10 +112,8 @@ public class DealDetailsActivity extends AppCompatActivity {
     compositeDisposable.add(
         featureEvents(features)
             .observeOn(computation())
-            .cast(Command.class)
-            .flatMap((Function<Command, ObservableSource<?>>) Command::actions)
-             //TODO i think there is an issue with Android Studio, if you expand the lambda, the error is gone. Or you have to do a cast.
-            .cast(Action.class)
+            .cast(BaseCommand.class)
+            .flatMap(Command::actions)
             .subscribe(store::dispatch, this::logError));
 
     // propagate states to features
