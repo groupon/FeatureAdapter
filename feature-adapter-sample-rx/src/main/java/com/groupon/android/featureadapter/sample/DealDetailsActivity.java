@@ -114,6 +114,7 @@ public class DealDetailsActivity extends AppCompatActivity {
             .observeOn(computation())
             .cast(Command.class)
             .flatMap(Command::actions)
+            //TODO I don't like this line. Is there an issue in Grox ?
             .cast(Action.class)
             .subscribe(store::dispatch, this::logError));
 
