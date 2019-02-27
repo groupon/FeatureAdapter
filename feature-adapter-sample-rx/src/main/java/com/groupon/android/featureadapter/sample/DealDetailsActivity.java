@@ -30,16 +30,16 @@ import static toothpick.Toothpick.openScopes;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.material.snackbar.Snackbar;
 import com.groupon.android.featureadapter.sample.events.RefreshDealCommand;
 import com.groupon.android.featureadapter.sample.features.FeatureControllerListCreator;
 import com.groupon.android.featureadapter.sample.rx.R;
@@ -54,17 +54,12 @@ import com.groupon.featureadapter.FeatureUpdate;
 import com.groupon.featureadapter.RxFeaturesAdapter;
 import com.groupon.grox.Action;
 import com.groupon.grox.commands.rxjava2.Command;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Flowable;
-import io.reactivex.FlowableTransformer;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
 import java.util.List;
 import javax.inject.Inject;
-import org.reactivestreams.Publisher;
 import toothpick.Scope;
 import toothpick.smoothie.module.SmoothieActivityModule;
-import toothpick.smoothie.module.SmoothieSupportActivityModule;
+import toothpick.smoothie.module.SmoothieAndroidXActivityModule;
 
 public class DealDetailsActivity extends AppCompatActivity {
 
@@ -91,7 +86,7 @@ public class DealDetailsActivity extends AppCompatActivity {
     scope = openScopes(getApplication(), DealDetailsScopeSingleton.class, this);
     scope.installModules(
         new SmoothieActivityModule(this),
-        new SmoothieSupportActivityModule(this),
+        new SmoothieAndroidXActivityModule(this),
         new FeatureAnimatorModule(),
         new FeatureItemDecorationModule());
     inject(this, scope);
@@ -118,14 +113,9 @@ public class DealDetailsActivity extends AppCompatActivity {
         featureEvents(features)
             .observeOn(computation())
             .cast(Command.class)
-            .flatMap(command -> command.actions())
-            .subscribe(o -> store.dispatch((Action) o)
-                , new Consumer<Throwable>() {
-                  @Override
-                  public void accept(Throwable throwable) throws Exception {
-                    DealDetailsActivity.this.logError(throwable);
-                  }
-                }));
+            .flatMap(Command::actions)
+            .cast(Action.class)
+            .subscribe(store::dispatch, this::logError));
 
     // propagate states to features
     compositeDisposable.add(
