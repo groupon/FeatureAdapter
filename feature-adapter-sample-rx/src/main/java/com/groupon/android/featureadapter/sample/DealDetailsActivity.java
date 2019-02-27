@@ -116,8 +116,8 @@ public class DealDetailsActivity extends AppCompatActivity {
             // we trigger a command. In our sample, and we recommend it as a good practice,
             // our Grox commands implement the FeatureEvent interface.
             // This is why, the cast below is required
-            .map(event -> (Command<SampleModel>) event)
-            .flatMap(Command::actions)
+            .cast(Command.class)
+            .flatMap(Command<SampleModel>::actions)
             .subscribe(store::dispatch, this::logError));
 
     // propagate states to features
