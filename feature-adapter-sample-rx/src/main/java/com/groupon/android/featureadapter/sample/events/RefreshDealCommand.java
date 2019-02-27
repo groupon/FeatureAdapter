@@ -47,10 +47,10 @@ public class RefreshDealCommand implements BaseCommand {
   }
 
   @Override
-  public Observable<? extends Action> actions() {
+  public Observable<? extends Action<SampleModel>> actions() {
     return dealApiClient.getDeal()
       .map(SuccessAction::new)
-      .cast(Action.class)
+      .map(action -> (Action<SampleModel>) action)
       .onErrorReturn(FailedAction::new)
       .toObservable()
       .startWith(new StateLoadingAction());
