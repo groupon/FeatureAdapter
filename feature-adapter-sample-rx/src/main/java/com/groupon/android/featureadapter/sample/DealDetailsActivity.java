@@ -54,7 +54,9 @@ import com.groupon.featureadapter.FeatureUpdate;
 import com.groupon.featureadapter.RxFeaturesAdapter;
 import com.groupon.grox.Action;
 import com.groupon.grox.commands.rxjava2.Command;
+import io.reactivex.ObservableSource;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Function;
 import java.util.List;
 import javax.inject.Inject;
 import toothpick.Scope;
@@ -113,8 +115,8 @@ public class DealDetailsActivity extends AppCompatActivity {
         featureEvents(features)
             .observeOn(computation())
             .cast(Command.class)
-            .flatMap(Command::actions)
-            //TODO I don't like this line. Is there an issue in Grox ?
+            .flatMap((Function<Command, ObservableSource<?>>) Command::actions)
+             //TODO i think there is an issue with Android Studio, if you expand the lambda, the error is gone. Or you have to do a cast.
             .cast(Action.class)
             .subscribe(store::dispatch, this::logError));
 
