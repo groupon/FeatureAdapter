@@ -16,18 +16,19 @@
 package com.groupon.featureadapter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil.DiffResult;
 import java.util.List;
 
 public class FeatureUpdate {
   @NonNull public final FeatureController featureController;
-  @NonNull public final List<ViewItem> newItems;
-  @NonNull public final DiffResult diffResult;
+  @Nullable public final List<ViewItem> newItems;
+  @Nullable public final DiffResult diffResult;
 
   public FeatureUpdate(
       @NonNull FeatureController featureController,
-      @NonNull List<ViewItem> newItems,
-      @NonNull DiffResult diffResult) {
+      @Nullable List<ViewItem> newItems,
+      @Nullable DiffResult diffResult) {
     this.featureController = featureController;
     this.newItems = newItems;
     this.diffResult = diffResult;

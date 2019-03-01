@@ -83,7 +83,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                             just(feature)
                                 .observeOn(computation())
                                 .map(featureController -> toFeatureUpdate(featureController, model))
-                                .filter(featureUpdate -> featureUpdate != null)
+                                .filter(featureUpdate -> featureUpdate.newItems != null && featureUpdate.diffResult != null)
                     )
                     // collect all observable of feature updates in a list in feature order
                     .toSortedList(featureUpdateComparator::compare)
