@@ -1,3 +1,5 @@
+### version 2.0.1 (TBD)
+
 ### version 2.0.0 (March 5th, 2019)
 * migrate to Android X (no longer supports android support library)
 * upgrade to RxJava2
