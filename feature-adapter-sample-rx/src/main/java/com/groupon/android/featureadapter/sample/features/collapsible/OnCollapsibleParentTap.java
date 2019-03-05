@@ -17,7 +17,7 @@ package com.groupon.android.featureadapter.sample.features.collapsible;
 
 import com.groupon.android.featureadapter.sample.state.SampleModel;
 import com.groupon.featureadapter.events.FeatureEvent;
-import com.groupon.grox.commands.rxjava1.SingleActionCommand;
+import com.groupon.grox.commands.rxjava2.SingleActionCommand;
 
 class OnCollapsibleParentTap extends SingleActionCommand<SampleModel> implements FeatureEvent {
 

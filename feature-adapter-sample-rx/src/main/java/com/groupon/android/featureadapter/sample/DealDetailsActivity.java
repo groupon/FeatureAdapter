@@ -19,27 +19,27 @@ import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_
 import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_LOADING;
 import static com.groupon.android.featureadapter.sample.state.SampleModel.STATE_READY;
 import static com.groupon.featureadapter.events.RxFeatureEvent.featureEvents;
-import static com.groupon.grox.RxStores.states;
-import static com.jakewharton.rxbinding.view.RxView.clicks;
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
-import static rx.schedulers.Schedulers.computation;
-import static rx.schedulers.Schedulers.io;
+import static com.groupon.grox.rxjava2.RxStores.states;
+import static com.jakewharton.rxbinding3.view.RxView.clicks;
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
+import static io.reactivex.schedulers.Schedulers.computation;
+import static io.reactivex.schedulers.Schedulers.io;
 import static toothpick.Toothpick.closeScope;
 import static toothpick.Toothpick.inject;
 import static toothpick.Toothpick.openScopes;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.material.snackbar.Snackbar;
 import com.groupon.android.featureadapter.sample.events.RefreshDealCommand;
 import com.groupon.android.featureadapter.sample.features.FeatureControllerListCreator;
 import com.groupon.android.featureadapter.sample.rx.R;
@@ -52,13 +52,13 @@ import com.groupon.featureadapter.FeatureAnimatorController;
 import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.FeatureUpdate;
 import com.groupon.featureadapter.RxFeaturesAdapter;
-import com.groupon.grox.commands.rxjava1.Command;
+import com.groupon.grox.commands.rxjava2.Command;
+import io.reactivex.disposables.CompositeDisposable;
 import java.util.List;
 import javax.inject.Inject;
-import rx.subscriptions.CompositeSubscription;
 import toothpick.Scope;
 import toothpick.smoothie.module.SmoothieActivityModule;
-import toothpick.smoothie.module.SmoothieSupportActivityModule;
+import toothpick.smoothie.module.SmoothieAndroidXActivityModule;
 
 public class DealDetailsActivity extends AppCompatActivity {
 
@@ -78,14 +78,14 @@ public class DealDetailsActivity extends AppCompatActivity {
 
   private Scope scope;
 
-  private final CompositeSubscription subscriptions = new CompositeSubscription();
+  private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     scope = openScopes(getApplication(), DealDetailsScopeSingleton.class, this);
     scope.installModules(
         new SmoothieActivityModule(this),
-        new SmoothieSupportActivityModule(this),
+        new SmoothieAndroidXActivityModule(this),
         new FeatureAnimatorModule(),
         new FeatureItemDecorationModule());
     inject(this, scope);
@@ -103,27 +103,32 @@ public class DealDetailsActivity extends AppCompatActivity {
     recyclerView.setItemAnimator(new FeatureAdapterDefaultAnimator(featureAnimatorController));
     recyclerView.addItemDecoration(featureAdapterItemDecoration);
 
-    subscriptions.add(clicks(refreshButton).subscribe(v -> refreshDeal(), this::logError));
+    compositeDisposable.add(clicks(refreshButton).subscribe(v -> refreshDeal(), this::logError));
 
     refreshButton.setOnClickListener(ignored -> refreshDeal());
 
     // listen for feature events
-    subscriptions.add(
+    compositeDisposable.add(
         featureEvents(features)
             .observeOn(computation())
+            // Grox and Feature Adapter are different libraries
+            // to combine the 2, we need a mechanism that, given a feature event,
+            // we trigger a command. In our sample, and we recommend it as a good practice,
+            // our Grox commands implement the FeatureEvent interface.
+            // This is why, the cast below is required
             .cast(Command.class)
-            .flatMap(Command::actions)
+            .flatMap(Command<SampleModel>::actions)
             .subscribe(store::dispatch, this::logError));
 
     // propagate states to features
-    subscriptions.add(
+    compositeDisposable.add(
         states(store)
             .subscribeOn(computation())
             .compose(adapter::updateFeatureItems)
             .subscribe(this::logFeatureUpdate, this::logError));
 
     // listen for new states
-    subscriptions.add(
+    compositeDisposable.add(
         states(store).observeOn(mainThread()).subscribe(this::reactToNewState, this::logError));
 
     if (store.getState().deal() == null) {
@@ -133,7 +138,7 @@ public class DealDetailsActivity extends AppCompatActivity {
 
   @Override
   protected void onDestroy() {
-    subscriptions.unsubscribe();
+    compositeDisposable.dispose();
     super.onDestroy();
     if (isFinishing()) {
       closeScope(DealDetailsScopeSingleton.class);
@@ -142,7 +147,7 @@ public class DealDetailsActivity extends AppCompatActivity {
   }
 
   private void refreshDeal() {
-    subscriptions.add(
+    compositeDisposable.add(
         new RefreshDealCommand(scope)
             .actions()
             .subscribeOn(io())

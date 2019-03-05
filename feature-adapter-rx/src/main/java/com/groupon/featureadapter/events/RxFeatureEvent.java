@@ -15,12 +15,13 @@
  */
 package com.groupon.featureadapter.events;
 
-import static rx.Observable.merge;
 
 import com.groupon.featureadapter.FeatureController;
+import io.reactivex.Observable;
 import java.util.ArrayList;
 import java.util.List;
-import rx.Observable;
+
+import static io.reactivex.Observable.merge;
 
 /**
  * A helper class to make it easier to use {@link FeatureEvent}s from {@link FeatureController}s

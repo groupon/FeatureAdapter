@@ -144,12 +144,12 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
   }
 
   /* Visible for Rx module. */
-  @Nullable
+  @NonNull
   FeatureUpdate toFeatureUpdate(FeatureController<MODEL> featureController, MODEL model) {
     final List<ViewItem> oldItems = featureItems.getItems(featureController);
     final List<ViewItem> newItems = featureController.buildItems(model);
     if (newItems == null) {
-      return null;
+      return new FeatureUpdate(featureController, null, null);
     }
     validateNewViewItems(featureController, newItems);
     final DiffUtilCallbackImpl callback =
