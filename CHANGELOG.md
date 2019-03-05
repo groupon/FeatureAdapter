@@ -1,4 +1,6 @@
-### version 1.0.14 (TBD)
+### version 2.0.0 (March 5th, 2019)
+* migrate to Android X (no longer supports android support library)
+* upgrade to RxJava2
 
 ### version 1.0.13 (August 16th, 2018)
 move the view item check for issue #12 into FeatureAdapter class

@@ -9,6 +9,8 @@ It offers a RecyclerView adapter that allows to define multiple “features”. 
 ## Design Overview
 FA will help to render a complex screen on android inside a RecyclerView. By complex, we mean a compound view that is composed of multiple items rendered by multiple view types.
 
+Starting from version `2.0.0`, FeatureAdapter has been migrated to Android X and no longer supports android support library. If you want to use FeatureAdapter with android support library, use the version `1.y.z`.
+
 <p align="center">
 <img src="./images/design-overview.png">
 </p>
