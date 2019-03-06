@@ -32,8 +32,8 @@ cache:
   - $HOME/.android/build-cache
 
 script:
-#  - ./gradlew check jacocoTestDebugUnitTestReport
-  - ./gradlew check 
+  - ./gradlew check jacocoTestDebugUnitTestReport
+  - ./gradlew check
 
 #after_success:
-#  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
