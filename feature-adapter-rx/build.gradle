@@ -46,12 +46,3 @@ dependencies {
   testImplementation deps.junit
   testImplementation deps.easymock
 }
-
-jacocoAndroidUnitTestReport {
-  excludes += ['**/AutoValue_*.*',
-               '**/*JavascriptBridge.class']
-
-  csv.enabled false
-  html.enabled true
-  xml.enabled true
-}
