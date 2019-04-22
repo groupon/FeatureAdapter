@@ -17,6 +17,7 @@ package com.groupon.featureadapter;
 
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import java.util.Comparator;
@@ -58,7 +59,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
    * @param modelObservable the stream of models
    * @return an observable of {@link FeatureUpdate} for tracking the adapter changes.
    */
-  public Observable<List<FeatureUpdate>> updateFeatureItems(Observable<MODEL> modelObservable) {
+  public Flowable<List<FeatureUpdate>> updateFeatureItems(Observable<MODEL> modelObservable) {
     // the ticker observable is gonna emit an item every time all the
     // list of items from all the feature controllers have been computed
     // so we just process the model instances one at a time
@@ -98,7 +99,7 @@ public class RxFeaturesAdapter<MODEL> extends FeaturesAdapter<MODEL> {
                             recyclerView.setItemViewCacheSize(getItemCount());
                           }
                           return list;
-                        }).toFlowable()).toObservable();
+                        }).toFlowable());
   }
 
   private static class FeatureUpdateComparator<T> implements Comparator<FeatureUpdate> {
