@@ -1,4 +1,7 @@
-### version 2.0.1 (TBD)
+### version 2.1.1 (TBD)
+
+### version 2.1.0 (April 26th, 2019)
+* Better preservation of internal back pressure strategy
 
 ### version 2.0.0 (March 5th, 2019)
 * migrate to Android X (no longer supports android support library)
