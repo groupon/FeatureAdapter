@@ -53,6 +53,7 @@ import com.groupon.featureadapter.FeatureController;
 import com.groupon.featureadapter.FeatureUpdate;
 import com.groupon.featureadapter.RxFeaturesAdapter;
 import com.groupon.grox.commands.rxjava2.Command;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
 import java.util.List;
 import javax.inject.Inject;
@@ -124,7 +125,7 @@ public class DealDetailsActivity extends AppCompatActivity {
     compositeDisposable.add(
         states(store)
             .subscribeOn(computation())
-            .compose(adapter::updateFeatureItems)
+            .to(adapter::updateFeatureItems)
             .subscribe(this::logFeatureUpdate, this::logError));
 
     // listen for new states
