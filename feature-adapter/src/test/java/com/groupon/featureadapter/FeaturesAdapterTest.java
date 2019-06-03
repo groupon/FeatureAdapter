@@ -62,6 +62,29 @@ public class FeaturesAdapterTest {
   }
 
   @Test
+  public void getItemCount_should_returnRightViewItemCount_when_atLeastOneFeatureControllerWithNullItems() throws Exception {
+    //GIVEN
+    final StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate = new StubAdapterViewTypeDelegate();
+    final List<ViewItem> items = new ArrayList<>();
+    final StubFeatureController<String> featureController = new StubFeatureController<>(singletonList(stubAdapterViewTypeDelegate), items);
+    final StubFeatureController<String> featureControllerWithNullItems = new StubFeatureController<>(singletonList(stubAdapterViewTypeDelegate), null);
+
+    List<FeatureController<String>> featureControllers = asList(featureController, featureControllerWithNullItems);
+    FeaturesAdapter<String> featuresAdapter = new FeaturesAdapter<>(featureControllers);
+    fixAdapterForTesting(featuresAdapter);
+
+    items.add(new ViewItem<>("a0", stubAdapterViewTypeDelegate));
+    items.add(new ViewItem<>("a1", stubAdapterViewTypeDelegate));
+    featuresAdapter.updateFeatureItems("a");
+
+    //WHEN
+    final int itemCount = featuresAdapter.getItemCount();
+
+    //THEN
+    assertThat(itemCount, is(2));
+  }
+
+  @Test
   public void getItemCount_should_returnAllItems() throws Exception {
     //GIVEN
     StubAdapterViewTypeDelegate stubAdapterViewTypeDelegate = new StubAdapterViewTypeDelegate();

@@ -123,7 +123,10 @@ public class FeaturesAdapter<MODEL> extends RecyclerView.Adapter<ViewHolder> {
   @SuppressWarnings("WeakerAccess")
   public void updateFeatureItems(MODEL model) {
     for (FeatureController<MODEL> featureController : featureItems.getFeatureControllers()) {
-      dispatchFeatureUpdate(toFeatureUpdate(featureController, model));
+        final FeatureUpdate featureUpdate = toFeatureUpdate(featureController, model);
+        if (featureUpdate.newItems != null && featureUpdate.diffResult != null) {
+            dispatchFeatureUpdate(featureUpdate);
+        }
     }
   }
 
