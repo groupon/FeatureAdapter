@@ -1,4 +1,7 @@
-### version 2.1.1 (TBD)
+### version 2.1.2 (TBD)
+
+### version 2.1.1 (June 3rd, 2019)
+* Fixed issue #33: fixed NPE in non Rx adapter when a controller returns null (non updated feature)
 
 ### version 2.1.0 (April 26th, 2019)
 * Better preservation of internal back pressure strategy
